@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Requisition Slip</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body { 
+            margin: 0;
+            padding-top: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .manual_mrs_container {
+            background: white;
+            opacity: 0.9;
+        }
+        .form-check-input {
+            width: 1.5em;
+            height: 1.5em;
+            margin-top: 0.15em;
+        }
+        .form-check-label {
+            padding-left: 0.5rem;
+            line-height: 1.8;
+        }
+        .table-responsive td, .table-responsive th {
+            height: 40px;
+        }
+        .print-container {
+            width: 100% !important;
+            max-width: 800px;
+            margin: 0 auto !important;
+            background: white;
+        }
+        input, 
+        textarea, 
+        .form-control, 
+        .form-control:focus,
+        .form-control[readonly] {
+            color: #000000 !important;
+            -webkit-text-fill-color: #000000 !important;
+            opacity: 1;
+        }
+        #date_needed_display {
+            color: #000000 !important;
+            cursor: pointer;
+        }
+
+        @media print {
+            body { padding-top: 0 !important; }
+            .container { border: none !important; }
+        }
+        @media screen and (max-width: 767px) {
+            .table-responsive .table {
+                min-width: 750px !important;
+            }
+        }
+        .table {
+            table-layout: fixed;
+            width: 100% !important;
+        }
+        .table td, .table th {
+            word-wrap: break-word;
+            border: 1px solid black;
+            padding: 4px !important;
+            color:#000 !important;
+        }
+        h6.print {
+            font-size: 13px;
+            display: inline-block;
+            width: 100%;
+            min-height: 20px;
+            color:#000 !important;
+        }
+        
+        .btn-outline-dark {
+            border-width: 2px !important; 
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            background-color: transparent !important;
+            color: #212529 !important;
+        }
+        
+        .btn-outline-dark:hover {
+            background-color: #212529 !important;
+            color: #ffffff !important;
+        }
+
+        .btn-outline-dark.active, 
+        .btn-outline-dark:active {
+            background-color: #212529 !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
+        }
+        
+        .submit_button {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #1e7a1b !important;
+            color: #ffffff !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #dcdcdc !important;
+            border-radius: 10px !important;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .normal_button {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333 !important;
+            color: #ffffff !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #dcdcdc !important;
+            border-radius: 10px !important;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .close_btn_table {
+            display: inline-flex;
+            align-items: center;
+            background-color: #db4936 !important;
+            color: #ffffff !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border: 1px solid #dcdcdc !important;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+        }
+        
+        .button-small { display: inline-block !important; font-weight: 400 !important; line-height: 1.5 !important; color: #fff !important; text-align: center !important; vertical-align: middle !important; background-color: #212529 !important; border: 1px solid #212529 !important; padding: 0.25rem 0.5rem !important; font-size: 0.75rem !important; border-radius: 0.25rem !important; text-decoration: none !important; margin: 2px !important; white-space: nowrap !important; cursor: pointer; }
+
+        .signature-container {
+            height: 80px !important;
+            position: relative;
+            overflow: visible;
+        }
+
+        .dept-popup {
+            width: 560px !important;
+            border-radius: 12px;
+            padding: 28px;
+        }
+        .dept-submit-btn {
+            background: #198754 !important;
+            color: #fff !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 12px 28px;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            transition: .2s !important;
+        }
+        .dept-submit-btn:hover {
+            background: #157347 !important;
+        }
+        .dept-cancel-btn {
+            background: #6c757d !important;
+            color: #fff !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 12px 28px !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            transition: .2s !important;
+        }
+        .dept-cancel-btn:hover {
+            background: #5c636a !important;
+        }
+
+        .mrs-calendar-hero-wrap {
+            width: min(100% - 24px, 1320px);
+            margin: 28px auto 22px;
+        }
+
+        .mrs-calendar-hero {
+            position: relative;
+            overflow: hidden;
+            padding: 35px 40px;
+            border-radius: 24px;
+            color: #ffffff;
+            background: linear-gradient(125deg, rgba(7, 35, 94, 0.98), rgba(21, 94, 239, 0.95));
+            box-shadow: 0 20px 50px rgba(21, 94, 239, 0.20);
+        }
+
+        .mrs-calendar-hero-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .mrs-calendar-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 13px;
+            padding: 7px 13px;
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.10);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .mrs-calendar-hero h1 {
+            margin: 0 0 8px;
+            color: #ffffff;
+            font-size: clamp(28px, 4vw, 43px);
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .mrs-calendar-hero-description {
+            max-width: 720px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .mrs-calendar-hero-icon {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            border-radius: 26px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            font-size: 45px;
+            transform: rotate(5deg);
+        }
+
+        .site-sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, .18);
+            background: linear-gradient(135deg, #071f4f 0%, #0d47a1 48%, #2563eb 100%);
+            box-shadow: 0 12px 34px rgba(7, 31, 79, .28);
+        }
+
+        .site-navbar {
+            width: min(100%, 1600px);
+            min-height: 72px;
+            margin: 0 auto;
+            padding: 10px 40px;
+        }
+
+        .site-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: #ffffff !important;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            text-decoration: none;
+        }
+
+        .site-brand-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 39px;
+            height: 39px;
+            border: 1px solid rgba(255, 255, 255, .26);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .14);
+            color: #ffffff;
+        }
+
+        #marketing_collateral {
+            margin: 0 0 10px !important;
+        }
+
+        .marketing-collateral-select-label {
+            display: block !important;
+            margin: 0 0 6px !important;
+            color: #344156 !important;
+            font-size: 0.72rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.02em !important;
+            text-transform: uppercase !important;
+        }
+
+        #show_collaterals {
+            min-height: 44px !important;
+            padding: 0.625rem 2.5rem 0.625rem 0.8rem !important;
+            border: 1px solid #000000 !important;
+            border-radius: 12px !important;
+            background-color: #ffffff !important;
+            color: #47546a !important;
+            font-size: 0.86rem !important;
+            font-weight: 500 !important;
+        }
+
+        .marketing-collateral-stat-card {
+            min-height: 76px !important;
+            padding: 10px 13px !important;
+            border: 1px solid #b6c5e7 !important;
+            border-radius: 14px !important;
+            background-color: #f6f8fc !important;
+        }
+
+        .marketing-collateral-stat-label {
+            display: block !important;
+            margin-bottom: 5px !important;
+            color: #768399 !important;
+            font-size: 0.67rem !important;
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+        }
+
+        .marketing-collateral-summary-value {
+            display: block !important;
+            color: #2f66ed !important;
+            font-size: 1.3rem !important;
+            font-weight: 700 !important;
+            line-height: 1.15 !important;
+            white-space: nowrap !important;
+        }
+
+        .marketing-collaterals-container {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 0 20px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: 1px solid #292929 !important;
+            border-radius: 16px !important;
+            background-color: #ffffff !important;
+        }
+
+        .marketing-collaterals-container--brochure {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 3fr) !important;
+            align-items: stretch !important;
+        }
+
+        .marketing-collaterals-container--brochure .marketing-collateral-section + .marketing-collateral-section {
+            border-left: 1px solid #292929 !important;
+        }
+
+        .marketing-collateral-section + .marketing-collateral-section {
+            border-top: 1px solid #292929 !important;
+        }
+
+        .marketing-collateral-section-header {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 12px !important;
+            min-height: 43px !important;
+            padding: 10px 13px !important;
+            border-bottom: 1px solid #292929 !important;
+            background-color: #f5f7fb !important;
+        }
+
+        .marketing-collateral-heading {
+            margin: 0 !important;
+            color: #1f2b3a !important;
+            font-size: 0.76rem !important;
+            font-weight: 700 !important;
+        }
+
+        .marketing-collateral-badge {
+            padding: 4px 9px !important;
+            border-radius: 999px !important;
+            background-color: #eaf0ff !important;
+            color: #2f66ed !important;
+            font-size: 0.63rem !important;
+            font-weight: 500 !important;
+        }
+
+        .marketing-collateral-badge--lead-time {
+            background-color: #fff0df !important;
+            color: #e68b35 !important;
+        }
+
+        .marketing-collateral-grid {
+            display: grid !important;
+            gap: 0 !important;
+        }
+
+        .marketing-collateral-grid--list {
+            grid-template-columns: 1fr !important;
+        }
+
+        .marketing-collateral-grid--columns {
+            grid-auto-flow: column !important;
+            grid-auto-columns: minmax(0, 1fr) !important;
+            grid-template-columns: repeat(var(--collateral-grid-columns, 1), minmax(0, 1fr)) !important;
+            grid-template-rows: repeat(var(--collateral-grid-rows, 5), minmax(42px, auto)) !important;
+        }
+
+        .marketing-collateral-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            min-width: 0 !important;
+            min-height: 39px !important;
+            padding: 8px 12px !important;
+            background-color: #ffffff !important;
+            transition: background-color 0.18s ease !important;
+        }
+
+        .marketing-collateral-item:hover {
+            background-color: #f1f4fb !important;
+        }
+
+        .marketing-collateral-item.is-selected {
+            background-color: #2f66ed !important;
+        }
+
+        .marketing-collateral-item.is-selected .marketing-collateral-label,
+        .marketing-collateral-item.is-selected .marketing-collateral-price {
+            color: #ffffff !important;
+        }
+
+        .marketing-collateral-quantity {
+            width: 46px !important;
+            min-width: 46px !important;
+            height: 27px !important;
+            padding: 3px 5px !important;
+            border: 1px solid #9aa8bb !important;
+            border-radius: 5px !important;
+            background-color: #ffffff !important;
+            color: #29364a !important;
+            font-size: 0.68rem !important;
+            font-weight: 600 !important;
+            text-align: center !important;
+        }
+
+        .marketing-collateral-price {
+            color: #2f66ed !important;
+            font-size: 0.67rem !important;
+            font-weight: 700 !important;
+            white-space: nowrap !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-sticky-header">
+        <nav class="navbar navbar-expand-lg site-navbar">
+            <a class="navbar-brand site-brand" href="#">
+                <span class="site-brand-mark"><i class="fa-solid fa-building"></i></span>
+                <span>Material Request Portal</span>
+            </a>
+        </nav>
+    </header>
+
+    <div id="step_1" style="display: block;">
+        <section class="mrs-calendar-hero-wrap">
+            <div class="mrs-calendar-hero">
+                <div class="mrs-calendar-hero-content">
+                    <div>
+                        <span class="mrs-calendar-eyebrow">
+                            <i class="fa-solid fa-file-circle-check"></i>
+                            Material Requisition Slip
+                        </span>
+                        <h1>Create Your MRS</h1>
+                        <p class="mrs-calendar-hero-description">
+                            Complete the request details, add the required materials, review all entries, and submit to save your MRS PDF directly to Google Drive.
+                        </p>
+                    </div>
+                    <div class="mrs-calendar-hero-icon" aria-hidden="true">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container manual_mrs_container w-100 border border-dark">
+            <div class="container p-5">
+                <div class="row align-items-center"> 
+                    <div class="col-sm-4 d-flex justify-content-center align-items-start">
+                        <img src="image/whd-icon.png" 
+                            alt="Worldwide Interiors Logo" 
+                            class="img-fluid" 
+                            style="max-height: 100px;">
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        <h6 class="fw-bold">WORLDWIDE INTERIORS DESIGN CENTER CORP.</h6>
+                        <h6 class="fw-bold">MERCHANDISING SECTION</h6>
+                        <h6 class="fw-bold">MATERIAL REQUISITION SLIP</h6>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="row d-flex align-items-end h-100">
+                            <div class="col-sm-4">
+                                <h6 class="fw-bold">MRS. No:</h6>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="text" readonly id="mrs_number" name="mrs_number" class="form-control border border-dark">
+                                <h6 style="display: none;" class="print" id="mrs_no-print"></h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6>Section/Branch</h6>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" onblur="validateField('section_branch')" id="section_branch" name="section_branch" class="form-control border border-dark" placeholder="Enter Section / Branch">
+                                <h6 style="display: none;" class="print" id="section_branch-print"></h6>
+                                <div class="error-msg text-danger small" id="section_branch-empty" style="display: none;">Please fill out this field!</div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-sm-3">
+                                <h6>Purpose</h6>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" id="purpose" onblur="validateField('purpose')" name="purpose" class="form-control border border-dark" placeholder="Enter Purpose">
+                                <h6 style="display: none;" class="print" id="purpose-print"></h6>
+                                <div class="error-msg text-danger small" id="purpose-empty" style="display: none;">Please fill out this field!</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6>Date Requested</h6>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" disabled id="date_requested_display" class="form-control border border-dark">
+                                <input type="date" id="date_requested" style="display: none;" name="date_requested">
+                                <h6 style="display: none;" class="print" id="date_requested_display-print"></h6>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-sm-3">
+                                <h6>Date Needed</h6>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" id="date_needed_display" placeholder="Click to select date" class="form-control border border-dark" readonly style="cursor: pointer;">
+                                <input type="date" id="date_needed" name="date_needed" style="display: none;">     
+                                <h6 style="display: none;" class="print" id="date_needed_display-print"></h6>
+                                <div class="error-msg text-danger small" id="date_needed-empty" style="display: none;">Please fill out this field!</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mt-3">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <h6>Type of Material</h6>
+                                <div class="error-msg text-danger small" id="material_type-empty" style="display: none;">Please select one of the checkboxes!</div>
+                            </div>
+                            <div class="col-sm-10" id="material-radio">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input border border-dark material-check" value="Consumable" type="checkbox" id="check1">
+                                            <p class="form-check-label small" for="check1">
+                                                Consumable (for one time use; and/or up to Php500.00/pc)
+                                            </p>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input border border-dark material-check" value="Minor Properties" type="checkbox" id="check2">
+                                            <p class="form-check-label small" for="check2">
+                                                Minor Properties (above Php500.00 up to Php20,000.00/pc)
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input border border-dark material-check" value="Capital Expenditures" type="checkbox" id="check3">
+                                            <p class="form-check-label small" for="check3">
+                                                Capital Expenditures (above Php20,000.00/pc)
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5">
+                                                <div class="form-check">
+                                                    <input class="form-check-input border border-dark material-check" value="Gift & Giveaways" type="checkbox" id="check4">
+                                                    <p class="form-check-label small" for="check4">
+                                                        Gift & Giveaways
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <div class="form-check">
+                                                    <input class="form-check-input border border-dark material-check" type="checkbox" id="custom-radio-material">
+                                                    <p class="form-check-label small text-primary">
+                                                        <strong>If none apply, enter custom text.</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-10" id="custom-material" style="display: none;">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <button id="material-back" class="button-small">Go Back</button>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control border border-dark w-100" placeholder="Enter your custom text here..." id="material-input-field" rows="1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 table-container mt-3">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <button class="normal_button" id="add-table-row">ADD TABLE ROW</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered border-dark">
+                                <thead class="table-secondary border border-dark">
+                                    <tr class="align-middle">
+                                        <th scope="col" class="text-center align-middle" style="width: 10%;">No.</th>
+                                        <th scope="col" class="text-center align-middle" style="width: 10%;">Qty</th>
+                                        <th scope="col" class="text-center align-middle" style="width: 10%;">Unit</th>
+                                        <th scope="col" class="text-center align-middle" style="width: 35%;">Item Description</th>
+                                        <th scope="col" class="text-center align-middle" style="width: 30%;">Specification(s)</th>
+                                        <th scope="col" class="text-center align-middle dont-print" style="width: 5%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="material-table-body">
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_1" value="1"><h6 style="display: none;" class="print text-center" id="item_no_1-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_1"><h6 style="display: none;" class="print text-center" id="qty_1-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_1"><h6 style="display: none;" class="print text-center" id="unit_1-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_1" id="desc_1" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_1-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_1" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_1-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_1"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_2" value="2"><h6 style="display: none;" class="print text-center" id="item_no_2-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_2"><h6 style="display: none;" class="print text-center" id="qty_2-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_2"><h6 style="display: none;" class="print text-center" id="unit_2-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_2" id="desc_2" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_2-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_2" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_2-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_2"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_3" value="3"><h6 style="display: none;" class="print text-center" id="item_no_3-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_3"><h6 style="display: none;" class="print text-center" id="qty_3-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_3"><h6 style="display: none;" class="print text-center" id="unit_3-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_3" id="desc_3" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_3-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_3" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_3-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_3"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_4" value="4"><h6 style="display: none;" class="print text-center" id="item_no_4-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_4"><h6 style="display: none;" class="print text-center" id="qty_4-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_4"><h6 style="display: none;" class="print text-center" id="unit_4-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_4" id="desc_4" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_4-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_4" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_4-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_4"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_5" value="5"><h6 style="display: none;" class="print text-center" id="item_no_5-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_5"><h6 style="display: none;" class="print text-center" id="qty_5-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_5"><h6 style="display: none;" class="print text-center" id="unit_5-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_5" id="desc_5" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_5-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_5" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_5-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_5"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_6" value="6"><h6 style="display: none;" class="print text-center" id="item_no_6-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_6"><h6 style="display: none;" class="print text-center" id="qty_6-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_6"><h6 style="display: none;" class="print text-center" id="unit_6-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_6" id="desc_6" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_6-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_6" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_6-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_6"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_7" value="7"><h6 style="display: none;" class="print text-center" id="item_no_7-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_7"><h6 style="display: none;" class="print text-center" id="qty_7-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_7"><h6 style="display: none;" class="print text-center" id="unit_7-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_7" id="desc_7" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_7-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_7" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_7-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_7"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" readonly class="form-control table-input border border-secondary text-center" id="item_no_8" value="8"><h6 style="display: none;" class="print text-center" id="item_no_8-print"></h6></td>
+                                        <td><input type="number" class="form-control table-input border border-secondary text-center" id="qty_8"><h6 style="display: none;" class="print text-center" id="qty_8-print"></h6></td>
+                                        <td><input type="text" class="form-control table-input border border-secondary" id="unit_8"><h6 style="display: none;" class="print text-center" id="unit_8-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center search-item-desc_8" id="desc_8" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="desc_8-print"></h6></td>
+                                        <td><textarea class="form-control table-input border border-secondary text-center" id="spec_8" rows="1"></textarea><h6 style="display: none;" class="print text-center" id="spec_8-print"></h6></td>
+                                        <td class="text-center dont-print" style="vertical-align: middle;"><button class="close_btn_table" id="close_8"><i class="fa-solid fa-x"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="note-container">
+                        <p class="small">Note: All materials requested in Merchandising Section shall be processed and served three (3) days upon receipt of MRS. Rush requests shall be duly approved by the Merchandising Head.</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h6>PREPARED BY:</h6>
+                        </div>
+                        <div class="col-sm-3">
+                            <h6>APPROVED BY:</h6>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="d-flex align-items-center">
+                                <input class="form-check-input border border-dark mt-0" type="checkbox" id="rush_status">
+                                <label class="form-check-label ms-2" for="rush_status">
+                                    To Rush Requests As Approved By:
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4">
+                        <div class="row">
+                            <div class="col-sm-4 p-2 border-dark border-start border-bottom border-top text-center">
+                                <p class="small mb-1">(Signature over printed name)</p>
+                                <div class="signature-container d-flex align-items-center justify-content-center">
+                                    <img id="req-sig-image" src="" style="display:none; max-height: 80px; width: auto" alt="Signature">
+                                </div>
+                                <h6 class="text-center fw-bold mt-1 mb-2" id="requestor_name-print" style="border-bottom: 1px solid black; min-height: 25px; padding-top: 5px;"></h6>
+                                <input type="text" onblur="validateField('requestor_name')" placeholder="Start typing name..." class="form-control border border-secondary text-center" id="requestor_name" autocomplete="off">
+                                <h6>Requesting Section Staff</h6>
+                                <div class="error-msg text-danger small" id="requestor_name-empty" style="display: none;">Please select a name!</div>
+                            </div>
+                            <div class="col-sm-4 p-2 border-dark border-start border-bottom border-top text-center">
+                                <p class="small mb-1">(Signature over printed name)</p>
+                                <div class="signature-container d-flex align-items-center justify-content-center">
+                                    <img id="app-sig-image" src="" style="display:none; max-height: 80px; width: auto" alt="Signature">
+                                </div>
+                                <h6 class="text-center fw-bold mt-1 mb-2" id="approver_name-print" style="border-bottom: 1px solid black; min-height: 25px; padding-top: 5px;"></h6>
+                                <input type="text" onblur="validateField('approver_name')" placeholder="Start typing name..." class="form-control border border-secondary text-center" id="approver_name" autocomplete="off">
+                                <h6>Approving Authority</h6>
+                                <div class="error-msg text-danger small" id="approver_name-empty" style="display: none;">Please select a name!</div>
+                            </div>
+                            <div class="col-sm-4 p-2 border-dark border-start border-bottom border-top border-end text-center">
+                                <p class="small mb-1">(Signature over printed name)</p>
+                                <div class="signature-container d-flex align-items-center justify-content-center">
+                                    <img id="merch-sig-image" src="" style="display:none; max-height: 80px; width: auto" alt="Signature">
+                                </div>
+                                <h6 class="text-center fw-bold mt-1 mb-2" id="merch_head_name-print" style="border-bottom: 1px solid black; min-height: 25px; padding-top: 5px;"></h6>
+                                <input type="text" placeholder="Start typing name..." class="form-control border border-secondary text-center" id="merch_head_name" autocomplete="off">
+                                <h6>Marketing Head</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container container-footer mb-5 mt-3 d-flex justify-content-end">
+            <button class="submit_button" id="next-step-btn">SUBMIT</button>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Main Controller Logic -->
+    <script>
+        /**
+         * Google Apps Script Web App Endpoint Configuration
+         * Deployment ID: AKfycbz95tFcujV6LfZ0-cnDvZAwYOEMgiOxjTTK6PRIi_O7RjYqSouUyAvLnHAJjVJ37QUPtA
+         * Library URL: https://script.google.com/macros/library/d/1OLABYWCPu9sC-1aaOPwsHw-9LcI4OX3gi47U4dOW14_lsq43NVretIRi/1
+         */
+        const GOOGLE_DRIVE_UPLOAD = Object.freeze({
+            // Replace this URL after deploying the supplied Code.gs as a Web App.
+            webAppUrl: "https://script.google.com/macros/s/AKfycbz95tFcujV6LfZ0-cnDvZAwYOEMgiOxjTTK6PRIi_O7RjYqSouUyAvLnHAJjVJ37QUPtA/exec",
+            // Must exactly match UPLOAD_TOKEN in Code.gs.
+            uploadToken: "mrs_2026_7f1c9e4b_2a6d_48bf_91e3_5dc278a60f14",
+            timeoutMs: 60000
+        });
+
+        function escapeHtml(value) {
+            return String(value || '').replace(/[&<>'"]/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[character]);
+        }
+
+        async function uploadPdfToGoogleDrive(pdfBlob, filename) {
+            if (!GOOGLE_DRIVE_UPLOAD.webAppUrl.includes('/macros/s/') ||
+                !GOOGLE_DRIVE_UPLOAD.webAppUrl.endsWith('/exec')) {
+                throw new Error('Google Apps Script Web App URL is not configured correctly.');
+            }
+
+            if (!GOOGLE_DRIVE_UPLOAD.uploadToken ||
+                GOOGLE_DRIVE_UPLOAD.uploadToken.startsWith('CHANGE_THIS')) {
+                throw new Error('Google Drive upload token has not been configured.');
+            }
+
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = String(reader.result || '');
+                    const commaIndex = result.indexOf(',');
+                    if (commaIndex < 0) reject(new Error('Unable to encode the generated PDF.'));
+                    else resolve(result.slice(commaIndex + 1));
+                };
+                reader.onerror = () => reject(new Error('Unable to read the generated PDF.'));
+                reader.readAsDataURL(pdfBlob);
+            });
+
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), GOOGLE_DRIVE_UPLOAD.timeoutMs);
+
+            try {
+                // text/plain keeps this request CORS-simple for Google Apps Script Web Apps.
+                const response = await fetch(GOOGLE_DRIVE_UPLOAD.webAppUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    redirect: 'follow',
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        token: GOOGLE_DRIVE_UPLOAD.uploadToken,
+                        filename,
+                        mimeType: 'application/pdf',
+                        base64
+                    })
+                });
+
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (error) {
+                    throw new Error('Google Apps Script returned an invalid response. Redeploy Code.gs and use its /exec URL.');
+                }
+
+                if (!response.ok || result.status !== 'success') {
+                    throw new Error(result.message || `Upload failed (HTTP ${response.status}).`);
+                }
+
+                return result;
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw new Error('Google Drive upload timed out. Please try again.');
+                }
+                throw error;
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
+
+        (function($) {
+            $(document).ready(function() {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    hour12: true 
+                });
+
+                const todayLocal = now.toISOString().split('T')[0];
+                const dateWithTimeDisplay = `${now.toLocaleDateString('en-US', options)} | ${timeString}`;
+
+                const minNeededDate = new Date();
+                let daysToAdd = 3;
+                let addedDays = 0;
+                while (addedDays < daysToAdd) {
+                    minNeededDate.setDate(minNeededDate.getDate() + 1);
+                    const dayOfWeek = minNeededDate.getDay();
+                    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                        addedDays++;
+                    }
+                }
+                const minNeededLocal = minNeededDate.toISOString().split('T')[0];
+                $('#date_requested').val(todayLocal);
+                $('#date_requested_display').val(dateWithTimeDisplay);
+
+                $('#date_needed').attr('min', minNeededLocal);
+                $('#date_needed_display').on('mousedown touchstart', function(e) {
+                    const $realPicker = $('#date_needed');
+                    const displayField = this.getBoundingClientRect();
+                    $realPicker.css({
+                        'position': 'fixed',
+                        'left': displayField.left + 'px',
+                        'top': (displayField.top + displayField.height) + 'px',
+                        'width': displayField.width + 'px',
+                        'height': '0px',
+                        'visibility': 'hidden',
+                        'display': 'block',
+                        'z-index': '9999'
+                    });
+                });
+
+                const fp = $("#date_needed").flatpickr({
+                    disable: [
+                        function(date) {
+                            return (date.getDay() === 0 || date.getDay() === 6);
+                        }
+                    ],
+                    minDate: new Date().fp_incr(4), 
+                    dateFormat: "Y-m-d",
+                    onChange: function(selectedDates, dateStr) {
+                        if (selectedDates.length > 0) {
+                            const selectedDate = selectedDates[0];
+                            $('#date_needed_display').val(selectedDate.toLocaleDateString('en-US', options));
+                            $('#rush_status').prop('checked', false).trigger('change');
+                            validateField('date_needed');
+                        }
+                    }
+                });
+
+                // Generate a standalone unique MRS ID
+                function generateUniqueID() {
+                    const d = new Date();
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const randomNum = Math.floor(1000 + Math.random() * 9000);
+                    const uniqueID = `MRS-${year}${month}${day}-${randomNum}`;
+                    $('#mrs_number').val(uniqueID).attr('value', uniqueID);
+                    $('#mrs_no-print').text(uniqueID);
+                }
+
+                generateUniqueID();
+
+                $('#section_branch').on('input change', function() {
+                    $('#section_branch-print').text($(this).val());
+                });
+
+                $('#purpose').on('input change', function() {
+                    $('#purpose-print').text($(this).val());
+                });
+
+                $('#date_needed_display').on('click', function() {
+                    fp.open();
+                });
+
+                window.validateField = (fieldId) => {
+                    const $field = $(`#${fieldId}`);
+                    const $error = $(`#${fieldId}-empty`);
+                    const isValid = ($field.val() || '').trim() !== '';
+                    $error.toggle(!isValid);
+                    return isValid;
+                };
+
+                window.validateForm = () => {
+                    const fields = ['requestor_name', 'approver_name', 'section_branch', 'purpose', 'date_needed'];
+                    const headerValid = fields.every(fieldId => window.validateField(fieldId));
+                    let hasTableData = false;
+                    let incompleteRowFound = false;
+
+                    $('#material-table-body tr').each(function() {
+                        const qty = $(this).find('input[id^="qty_"]').val() || '';
+                        const unit = $(this).find('input[id^="unit_"]').val() || '';
+                        const desc = $(this).find('textarea[id^="desc_"]').val() || '';
+                        const spec = $(this).find('textarea[id^="spec_"]').val() || '';
+
+                        const isRowStarted = (qty.trim() !== '' || unit.trim() !== '' || desc.trim() !== '' || spec.trim() !== '');
+
+                        if (isRowStarted) {
+                            hasTableData = true;
+                            if (qty.trim() === '' || unit.trim() === '' || desc.trim() === '' || spec.trim() === '') {
+                                incompleteRowFound = true;
+                                $(this).find('input, textarea').each(function() {
+                                    if (($(this).val() || '').trim() === '') {
+                                        $(this).css('border', '2px solid red');
+                                    } else {
+                                        $(this).css('border', '');
+                                    }
+                                });
+                            } else {
+                                $(this).find('input, textarea').css('border', '');
+                            }
+                        }
+                    });
+
+                    if (!headerValid) {
+                        Swal.fire('Missing Info', 'Please fill in all required header fields.', 'error');
+                        return false;
+                    }
+                    if (!hasTableData) {
+                        Swal.fire('Empty Request', 'Please add at least one item to the table before submitting.', 'warning');
+                        return false;
+                    }
+                    if (incompleteRowFound) {
+                        Swal.fire('Incomplete Row', 'Please ensure Qty, Unit, Description, and Specs are filled for every item row.', 'error');
+                        return false;
+                    }
+                    return true;
+                };
+
+                $('#material-back').on('click', function(e) {
+                    $('#custom-material').fadeOut(200, function() {
+                        $('#custom-radio-material').prop('checked', false);
+                        $('#material-radio').fadeIn(200);
+                    });
+                });
+
+                $(document).on('change', '.material-check', function() {
+                    if ($(this).is(':checked')) {
+                        $('.material-check').not(this).prop('checked', false);
+                        $('#material_type-empty').hide();
+                    }
+                    if ($('#custom-radio-material').is(':checked')) {
+                        $('#material-radio').fadeOut(200, function() {
+                            $('#custom-material').fadeIn(200);
+                        });
+                    }
+                });
+
+                let rowCount = $('#material-table-body tr').length;
+                $('#add-table-row').on('click', function(e) {
+                    e.preventDefault();
+                    if ($('#material-table-body tr').length >= 20) {
+                        Swal.fire('Maximum 20 Rows', 'A maximum of 20 material rows is allowed.', 'warning');
+                        return;
+                    }
+
+                    rowCount++;
+                    const newRow = `
+                        <tr>
+                            <td>
+                                <input type="text" readonly class="form-control table-input border border-secondary text-center" value="${rowCount}" id="item_no_${rowCount}">
+                                <h6 style="display: none;" class="print text-center" id="item_no_${rowCount}-print"></h6>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control table-input border border-secondary text-center" id="qty_${rowCount}">
+                                <h6 style="display: none;" class="print text-center" id="qty_${rowCount}-print"></h6>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control table-input border border-secondary" id="unit_${rowCount}">
+                                <h6 style="display: none;" class="print text-center" id="unit_${rowCount}-print"></h6>
+                            </td>
+                            <td>
+                                <textarea class="form-control table-input border border-secondary text-center search-item-desc_${rowCount}" id="desc_${rowCount}" rows="1"></textarea>
+                                <h6 style="display: none;" class="print text-center" id="desc_${rowCount}-print"></h6>
+                            </td>
+                            <td>
+                                <textarea class="form-control table-input border border-secondary text-center" id="spec_${rowCount}" rows="1"></textarea>
+                                <h6 style="display: none;" class="print text-center" id="spec_${rowCount}-print"></h6>
+                            </td>
+                            <td class="text-center dont-print" style="vertical-align: middle;">
+                                <button class="close_btn_table" id="close_${rowCount}"><i class="fa-solid fa-x"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    $('#material-table-body').append(newRow);
+                });
+
+                $('#material-table-body').on('click', '.close_btn_table', function(e) {
+                    e.preventDefault();
+                    if ($('#material-table-body tr').length > 1) {
+                        $(this).closest('tr').remove();
+                        $('#material-table-body tr').each(function(index) {
+                            const newIndex = index + 1;
+                            const $row = $(this);
+                            $row.find('input[id^="item_no_"]').attr('id', `item_no_${newIndex}`).val(newIndex);
+                            $row.find('input[id^="qty_"]').attr('id', `qty_${newIndex}`);
+                            $row.find('input[id^="unit_"]').attr('id', `unit_${newIndex}`);
+                            $row.find('textarea[id^="desc_"]').attr('id', `desc_${newIndex}`);
+                            $row.find('textarea[id^="spec_"]').attr('id', `spec_${newIndex}`);
+                            $row.find('.close_btn_table').attr('id', `close_${newIndex}`);
+                        });
+                        rowCount = $('#material-table-body tr').length;
+                    } else {
+                        Swal.fire('Action Denied', 'At least one row is required.', 'error');
+                    }
+                });
+
+                $(document).on('click', '#next-step-btn', function(e) {
+                    e.preventDefault();
+                    if (!window.validateForm()) return;
+
+                    Swal.fire({
+                        title: 'Submit Material Request?',
+                        html: 'Are you sure you want to submit and save this MRS to Google Drive?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fa fa-check me-2"></i>Yes, Submit',
+                        cancelButtonText: '<i class="fa fa-pen me-2"></i>Review First',
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: 'dept-submit-btn',
+                            cancelButton: 'dept-cancel-btn',
+                            popup: 'dept-popup'
+                        }
+                    }).then((result) => {
+                        if (!result.isConfirmed) return;
+
+                        Swal.fire({
+                            title: 'Uploading to Google Drive...',
+                            text: 'Generating PDF and sending to cloud storage...',
+                            allowOutsideClick: false,
+                            didOpen: () => { Swal.showLoading(); }
+                        });
+
+                        generatePDF();
+                    });
+                });
+
+                $('textarea.table-input').on('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                    const lineCount = this.value.split('\n').length;
+                    this.setAttribute('rows', lineCount > 0 ? lineCount : 1);
+                });
+
+                async function generatePDF() {
+                    window.scrollTo(0, 0);
+                    const element = document.querySelector('.container.manual_mrs_container.w-100.border.border-dark');
+                    if (!element) return;
+
+                    const headerLogoImage = element.querySelector(':scope > .container > .row.align-items-center img');
+                    const visibleSignatureImages = [
+                        document.getElementById('req-sig-image'),
+                        document.getElementById('app-sig-image'),
+                        document.getElementById('merch-sig-image')
+                    ].filter(img => img && img.style.display !== 'none');
+
+                    const pdfImages = [headerLogoImage].concat(visibleSignatureImages).filter(Boolean);
+
+                    const originalStates = Array.from(element.querySelectorAll('*')).map(node => ({
+                        node,
+                        style: node.getAttribute('style'),
+                        className: node.className,
+                        hidden: node.hidden
+                    }));
+
+                    const originalElementClass = element.className;
+                    const originalElementStyle = element.getAttribute('style');
+
+                    function restorePdfLayout() {
+                        element.className = originalElementClass;
+                        if (originalElementStyle === null) element.removeAttribute('style');
+                        else element.setAttribute('style', originalElementStyle);
+
+                        originalStates.forEach(state => {
+                            state.node.className = state.className;
+                            state.node.hidden = state.hidden;
+                            if (state.style === null) state.node.removeAttribute('style');
+                            else state.node.setAttribute('style', state.style);
+                        });
+                    }
+
+                    try {
+                        element.querySelectorAll('input, textarea').forEach(field => {
+                            if (!field.id) return;
+                            const printField = element.querySelector('#' + CSS.escape(field.id) + '-print') ||
+                                               (field.id === 'mrs_number' ? element.querySelector('#mrs_no-print') : null);
+                            if (printField) {
+                                printField.textContent = field.value || '';
+                            }
+                        });
+
+                        const generatedHeaderPrintValues = [];
+                        ['#section_branch', '#purpose', '#date_requested_display', '#date_needed_display'].forEach(selector => {
+                            const input = element.querySelector(selector);
+                            if (!input) return;
+                            const printVal = document.createElement('div');
+                            printVal.className = 'mrs-generated-header-print-value';
+                            printVal.textContent = input.value || '';
+                            Object.assign(printVal.style, {
+                                display: 'block',
+                                width: '100%',
+                                minHeight: '22px',
+                                borderBottom: '1px solid black',
+                                color: '#000000',
+                                fontSize: '10px',
+                                fontWeight: 'bold',
+                                lineHeight: '1.2'
+                            });
+                            input.insertAdjacentElement('afterend', printVal);
+                            generatedHeaderPrintValues.push(printVal);
+                        });
+
+                        element.querySelectorAll('#material-table-body tr').forEach(row => {
+                            row.querySelectorAll('input:not([type="checkbox"]), textarea').forEach(field => {
+                                const printVal = document.createElement('div');
+                                printVal.className = 'mrs-generated-table-print-value';
+                                printVal.textContent = field.value || '';
+                                Object.assign(printVal.style, {
+                                    display: 'block',
+                                    width: '100%',
+                                    minHeight: '18px',
+                                    fontSize: '10px',
+                                    textAlign: 'center'
+                                });
+                                field.insertAdjacentElement('afterend', printVal);
+                                generatedHeaderPrintValues.push(printVal);
+                            });
+                        });
+
+                        element.querySelectorAll('#next-step-btn, #add-table-row, #material-back, .error-msg, .close_btn_table, .dont-print')
+                            .forEach(node => { node.style.display = 'none'; });
+
+                        element.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]), textarea')
+                            .forEach(field => { field.style.display = 'none'; });
+
+                        element.classList.remove('border', 'border-dark');
+                        Object.assign(element.style, {
+                            border: 'none',
+                            width: '794px',
+                            maxWidth: '794px',
+                            backgroundColor: '#ffffff'
+                        });
+
+                        const mrsNumber = document.querySelector('#mrs_number')?.value || 'Form';
+                        const options = {
+                            margin: [0.2, 0.2],
+                            filename: `MRS_${mrsNumber}.pdf`,
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2, useCORS: true, scrollY: 0, backgroundColor: '#ffffff' },
+                            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                        };
+
+                        const pdfWorker = html2pdf().set(options).from(element).toPdf();
+                        const pdfDocument = await pdfWorker.get('pdf');
+                        const totalPages = pdfDocument.internal.getNumberOfPages();
+                        if (totalPages > 1) {
+                            for (let i = totalPages; i > 1; i--) pdfDocument.deletePage(i);
+                        }
+
+                        const pdfBlob = pdfDocument.output('blob');
+
+                        try {
+                            const res = await uploadPdfToGoogleDrive(pdfBlob, options.filename);
+                            const safeFileUrl = escapeHtml(res.fileUrl);
+                            const safeFileName = escapeHtml(res.fileName || options.filename);
+
+                            await Swal.fire({
+                                title: 'Upload Successful!',
+                                html: `${safeFileName} has been stored in Google Drive.<br><br>
+                                       <a href="${safeFileUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm">
+                                          <i class="fa-brands fa-google-drive me-1"></i> Open in Google Drive
+                                       </a>`,
+                                icon: 'success',
+                                confirmButtonText: 'Create New Request'
+                            });
+                            location.reload();
+                        } catch (err) {
+                            console.error('Google Drive upload error:', err);
+                            Swal.fire('Upload Error', err.message || 'Could not upload the PDF to Google Drive.', 'error');
+                        }
+
+                    } finally {
+                        element.querySelectorAll('.mrs-generated-table-print-value, .mrs-generated-header-print-value').forEach(el => el.remove());
+                        restorePdfLayout();
+                    }
+                }
+
+                // Autocomplete employee list & signatures
+                const employees = [
+                    // { label: "Klint John Cagot", signature: "https://www.worldwidehomedepot.ph/wp-content/uploads/2026/01/signature-klint.png" },
+                    { label: "Jocelyn Lauron", signature: "signature/jocelyn.png" },
+                    { label: "Manuel Roy Cabahug", signature: "signature/manuel.png" },
+                    { label: "Mark Anthony Musico", signature: "signature/mark.png" },
+                    { label: "Cheryl Apostol", signature: "signature/cheryl.png" },
+                    { label: "Daneta Venia Santillan", signature: "signature/daneta.png" },
+                    { label: "Jaymark Pongautan", signature: "signature/jaymark.png" },
+                    { label: "Ruslyn Mayol", signature: "signature/ruslyn.png" },
+                    { label: "Marylyn Manatad", signature: "signature/marylyn.png" },
+                    { label: "Mary Ann Gabunilas", signature: "signature/mary-ann.png" },
+                    { label: "Rosalie Ardeña", signature: "signature/rosalie.png" },
+                    { label: "Maximiliano Turtoga", signature: "signature/maximiliano.png" },
+                    { label: "Juvelyn D. Lasala", signature: "signature/juvelyn.png" },
+                    { label: "Girlie June S. Lupiva", signature: "signature/girlie.png" },
+                    { label: "Carlito Señagan", signature: "signature/carlito.png" },
+                    { label: "Bernadith G. Gamoso", signature: "signature/bernadith.png" },
+                    { label: "Anjelly Ignacio", signature: "signature/anjelly.png" }
+                ];
+
+                $("#requestor_name").autocomplete({
+                    source: employees,
+                    minLength: 1,
+                    select: function(e, ui) {
+                        $(this).val(ui.item.label);
+                        $("#requestor_name-print").text(ui.item.label);
+                        if (ui.item.signature) $("#req-sig-image").attr("src", ui.item.signature).show();
+                        validateField('requestor_name');
+                        return false;
+                    }
+                });
+
+                const approvingSignatories = employees.filter(emp => ["Jocelyn Lauron", "Ruslyn Mayol", "Juvelyn D. Lasala", "Carlito Señagan"].includes(emp.label));
+                const marketingSignatories = employees.filter(emp => ["Klint John Cagot", "Manuel Roy Cabahug", "Jocelyn Lauron", "Mark Anthony Musico"].includes(emp.label));
+
+                $("#approver_name").autocomplete({
+                    source: approvingSignatories,
+                    minLength: 0,
+                    select: function(e, ui) {
+                        $(this).val(ui.item.label);
+                        $("#approver_name-print").text(ui.item.label);
+                        if (ui.item.signature) $("#app-sig-image").attr("src", ui.item.signature).show();
+                        validateField('approver_name');
+                        return false;
+                    }
+                }).on("focus", function() { $(this).autocomplete("search", ""); });
+
+                $("#merch_head_name").autocomplete({
+                    source: marketingSignatories,
+                    minLength: 0,
+                    select: function(e, ui) {
+                        $(this).val(ui.item.label);
+                        $("#merch_head_name-print").text(ui.item.label);
+                        if (ui.item.signature) $("#merch-sig-image").attr("src", ui.item.signature).show();
+                        return false;
+                    }
+                }).on("focus", function() { $(this).autocomplete("search", ""); });
+
+                // Excel-based autocomplete for items
+                let productsData = [];
+                let swatchesData = [];
+
+                async function loadExcelData() {
+                    const url = "https://www.worldwidehomedepot.ph/wp-content/uploads/2026/07/mrs-search-list-v2.xlsx";
+                    if (typeof XLSX === 'undefined') return;
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) return;
+                        const arrayBuffer = await response.arrayBuffer();
+                        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                        const productSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const swatchSheet = workbook.Sheets[workbook.SheetNames[1]];
+
+                        productsData = XLSX.utils.sheet_to_json(productSheet, { header: 1 }).flat().filter(item => item && String(item).trim() !== "");
+                        swatchesData = swatchSheet ? XLSX.utils.sheet_to_json(swatchSheet, { header: 1 }).flat().filter(item => item && String(item).trim() !== "") : [];
+                        initDescriptionAutocomplete();
+                    } catch (e) {
+                        console.warn("Excel loading skipped or offline.", e);
+                    }
+                }
+
+                function initDescriptionAutocomplete() {
+                    const $fields = $('textarea[id^="desc_"], input[id^="desc_"]');
+                    $fields.autocomplete({
+                        source: function(request, response) {
+                            const term = request.term.toLowerCase().trim();
+                            const productMatches = productsData.filter(item => String(item).toLowerCase().includes(term)).slice(0, 15);
+                            response(productMatches.map(item => ({ label: item, value: item })));
+                        },
+                        minLength: 1,
+                        select: function(event, ui) {
+                            $(this).val(ui.item.value).trigger('change');
+                            return false;
+                        }
+                    });
+                }
+
+                $(document).on('click', '#add-table-row', function() {
+                    setTimeout(initDescriptionAutocomplete, 200);
+                });
+
+                loadExcelData();
+
+                // Table Arrow & Enter Key Navigation
+                $('#material-table-body').on('keydown', 'input, textarea', function(e) {
+                    const $this = $(this);
+                    const $td = $this.closest('td');
+                    const $tr = $this.closest('tr');
+                    const columnIndex = $td.index();
+                    const isNumberInput = $this.attr('type') === 'number';
+                    let $target;
+
+                    if ([13, 37, 38, 39, 40].includes(e.which)) {
+                        switch (e.which) {
+                            case 37:
+                                if (isNumberInput || this.selectionStart === 0) {
+                                    $target = $td.prevAll().filter(':visible').first().find('input, textarea');
+                                }
+                                break;
+                            case 38:
+                                e.preventDefault();
+                                $target = $tr.prev().find('td').eq(columnIndex).find('input, textarea').filter(':visible');
+                                break;
+                            case 13:
+                            case 39:
+                                e.preventDefault();
+                                $target = $td.nextAll().filter(':visible').first().find('input, textarea');
+                                if (!$target.length) {
+                                    $target = $tr.next().find('td').filter(function() { return $(this).index() !== 0; }).find('input, textarea').filter(':visible').first();
+                                }
+                                break;
+                            case 40:
+                                e.preventDefault();
+                                $target = $tr.next().find('td').eq(columnIndex).find('input, textarea').filter(':visible');
+                                break;
+                        }
+
+                        if ($target && $target.length && !$target.prop('readonly')) {
+                            $target.focus();
+                        }
+                    }
+                });
+            });
+        })(jQuery);
+    </script>
+
+    <!-- Marketing Collateral Module -->
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                const $materialTableContainer = $('.table-container').first();
+                const $originalControlRow = $materialTableContainer.children('.row').first();
+
+                if (!$materialTableContainer.length || !$originalControlRow.length) return;
+
+                const collateralMarkup = `
+                    <div id="marketing_collateral" class="dont-print" data-html2canvas-ignore="true">
+                        <div class="row">
+                            <div class="col-sm-4 mt-2">
+                                <div class="marketing-collateral-select-column">
+                                    <label class="marketing-collateral-select-label" for="show_collaterals">
+                                        MARKETING COLLATERAL
+                                    </label>
+                                    <select class="form-select" id="show_collaterals">
+                                        <option value="" selected>SELECT</option>
+                                        <option value="giveaways">Giveaways</option>
+                                        <option value="brochure">Brochures</option>
+                                        <option value="swatches">Swatches</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 mt-2">
+                                <div class="marketing-collateral-stat-card">
+                                    <span class="marketing-collateral-stat-label">Total Amount</span>
+                                    <strong class="marketing-collateral-summary-value" id="marketing-collateral-total-amount">₱0.00</strong>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 mt-2">
+                                <div class="marketing-collateral-stat-card">
+                                    <span class="marketing-collateral-stat-label">Total Selected Items</span>
+                                    <strong class="marketing-collateral-summary-value" id="marketing-collateral-selected-count">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container marketing-collaterals-container dont-print mb-3" id="marketing-collaterals-container" style="display: none;" data-html2canvas-ignore="true"></div>
+                `;
+
+                $originalControlRow.after(collateralMarkup);
+
+                const selectedMarketingCollaterals = new Set();
+                const selectedMarketingCollateralQuantities = new Map();
+                const marketingCollateralCatalog = {
+                    giveaways: [{
+                        heading: 'Giveaways (on stock)',
+                        layout: 'list',
+                        items: [
+                            { name: 'Corporate Umbrella', price: 90 },
+                            { name: 'Vacuum Flask', price: 120 },
+                            { name: 'Bamboo Ballpen', price: 8 },
+                            { name: 'Corporate Notebook', price: 58 },
+                            { name: 'Paper Bag', price: 10 },
+                            { name: 'Burlap Bag', price: 81 }
+                        ]
+                    }],
+                    brochure: [
+                        {
+                            heading: 'Brochures (on stock)',
+                            layout: 'columns',
+                            items: [
+                                { name: 'Elements', price: 17 },
+                                { name: 'Craftswood', price: 23 },
+                                { name: 'Idealock', price: 23 },
+                                { name: 'Marco Polo Sanitary Wares', price: 19 }
+                            ]
+                        },
+                        {
+                            heading: 'Brochures (to be printed)',
+                            badge: '1-day lead time',
+                            layout: 'columns',
+                            items: [
+                                { name: 'Faucets & Showers', price: 10 },
+                                { name: 'Bathroom & Plumbing Accessories', price: 10 },
+                                { name: 'Kitchen Sinks & Marble Slabs', price: 10 },
+                                { name: 'Ceramic Tile Collections', price: 15 }
+                            ]
+                        }
+                    ],
+                    swatches: [{
+                        heading: 'Sample Swatches',
+                        badge: '3-day lead time',
+                        layout: 'columns',
+                        items: [
+                            { name: 'UV Board Swatches' },
+                            { name: 'Bamboo Charcoal Swatches' },
+                            { name: 'SPC Vinyl' }
+                        ]
+                    }]
+                };
+
+                function updateMarketingCollateralSummary() {
+                    let totalAmount = 0;
+                    let totalQuantity = 0;
+                    selectedMarketingCollaterals.forEach(function(itemKey) {
+                        const [category, groupIndex, itemIndex] = itemKey.split(':');
+                        const item = marketingCollateralCatalog[category][Number(groupIndex)].items[Number(itemIndex)];
+                        const quantity = selectedMarketingCollateralQuantities.get(itemKey) || 1;
+                        totalQuantity += quantity;
+                        if (item && typeof item.price === 'number') totalAmount += item.price * quantity;
+                    });
+                    $('#marketing-collateral-selected-count').text(totalQuantity);
+                    $('#marketing-collateral-total-amount').text(`₱${totalAmount.toFixed(2)}`);
+                }
+
+                function renderMarketingCollaterals(category) {
+                    const $container =$('#marketing-collaterals-container');
+                    const groups = marketingCollateralCatalog[category];
+                    $container.empty();
+                    if (!groups) {
+                        $container.hide();
+                        return;
+                    }
+                    groups.forEach(function(group, gIdx) {
+                        const $section =$('<section class="marketing-collateral-section"></section>');
+                        $section.append(`<div class="marketing-collateral-section-header"><h6 class="marketing-collateral-heading">${group.heading}</h6></div>`);
+                        const $grid =$(`<div class="marketing-collateral-grid marketing-collateral-grid--${group.layout || 'list'}"></div>`);
+
+                        group.items.forEach(function(item, iIdx) {
+                            const itemKey = `${category}:${gIdx}:${iIdx}`;
+                            const isSelected = selectedMarketingCollaterals.has(itemKey);
+                            const $item =$(`
+                                <div class="marketing-collateral-item ${isSelected ? 'is-selected' : ''}">
+                                    <input type="checkbox" class="form-check-input marketing-collateral-checkbox" data-item-key="${itemKey}" ${isSelected ? 'checked' : ''}>
+                                    <label class="marketing-collateral-label">${item.name}</label>
+                                    <input type="number" class="marketing-collateral-quantity" data-item-key="${itemKey}" min="1" value="${selectedMarketingCollateralQuantities.get(itemKey) || 1}" ${!isSelected ? 'disabled' : ''}>
+                                    ${item.price ? `<span class="marketing-collateral-price">₱${item.price.toFixed(2)}</span>` : ''}
+                                </div>
+                            `);
+                            $grid.append($item);
+                        });
+                        $section.append($grid);
+                        $container.append($section);
+                    });
+                    $container.show();
+                }
+
+                $(document).on('change', '#show_collaterals', function() {
+                    renderMarketingCollaterals($(this).val());
+                });
+
+                $(document).on('change', '.marketing-collateral-checkbox', function() {
+                    const itemKey = $(this).data('item-key');
+                    const [category, gIdx, iIdx] = itemKey.split(':');
+                    const item = marketingCollateralCatalog[category][Number(gIdx)].items[Number(iIdx)];
+                    const $item =$(this).closest('.marketing-collateral-item');
+                    const $qty =$item.find('.marketing-collateral-quantity');
+
+                    $item.toggleClass('is-selected', this.checked);$qty.prop('disabled', !this.checked);
+
+                    if (this.checked) {
+                        selectedMarketingCollaterals.add(itemKey);
+                        selectedMarketingCollateralQuantities.set(itemKey, 1);
+
+                        // Find next empty table row or add one
+                        let $emptyRow =$('#material-table-body tr').filter(function() {
+                            return ($(this).find('textarea[id^="desc_"]').val() || '').trim() === '';
+                        }).first();
+
+                        if (!$emptyRow.length &&$('#material-table-body tr').length < 20) {
+                            $('#add-table-row').trigger('click');
+                            $emptyRow =$('#material-table-body tr').last();
+                        }
+
+                        if ($emptyRow.length) {
+                            $emptyRow.attr('data-marketing-key', itemKey);$emptyRow.find('textarea[id^="desc_"]').val(item.name).trigger('input');
+                            $emptyRow.find('input[id^="qty_"]').val(1).trigger('input');
+                            $emptyRow.find('input[id^="unit_"]').val('PC').trigger('input');
+                            $emptyRow.find('textarea[id^="spec_"]').val(item.price ? `₱${item.price.toFixed(2)}` : '').trigger('input');
+                        }
+                    } else {
+                        selectedMarketingCollaterals.delete(itemKey);
+                        selectedMarketingCollateralQuantities.delete(itemKey);
+                        $(`#material-table-body tr[data-marketing-key="${itemKey}"]`).find('textarea, input').val('').trigger('input');
+                    }
+                    updateMarketingCollateralSummary();
+                });
+            });
+        })(jQuery);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1277 @@
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <title>Tile Calculator</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+          * {
+            box-sizing: border-box;
+          }
+
+          body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, #ffffff 0%, #f5f7fb 100%);
+            color: #1f2937;
+            min-height: 100vh;
+            padding: 40px 0;
+          }
+
+          .container {
+            max-width: 1200px;
+          }
+
+          .card {
+            border: 0;
+            border-radius: 28px;
+            background: #ffffff;
+            box-shadow:
+              0 10px 25px rgba(0, 0, 0, .06),
+              0 25px 70px rgba(0, 0, 0, .10);
+            overflow: hidden;
+          }
+
+          .first-card,
+          .second-card {
+            min-height: 560px;
+          }
+
+          .zero-card{
+            min-height: 100px;
+          }
+
+          .card-body {
+            padding: 34px;
+          }
+
+          .cool-text-yellow {
+            color: #0b3a78;
+            text-shadow: none;
+            font-weight: 800;
+            letter-spacing: .5px;
+          }
+
+          .cool-text-black {
+            color: #1f2937;
+          }
+
+          .cool-text-red {
+            color: #ef4444;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 6px;
+          }
+
+          h3 {
+            font-size: 24px;
+            position: relative;
+            padding-bottom: 14px;
+          }
+
+          h3::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            border-radius: 20px;
+            background: #ffbd18;
+          }
+
+          h5 {
+            font-size: 26px;
+            margin-bottom: 18px;
+          }
+
+          .center-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .toggle-item{
+              width:100%;
+          }
+          .toggle-radio {
+            display: none;
+          }
+          .toggle-button{
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              width:100%;
+              min-height:56px;
+              padding:12px 14px;
+              border-radius:16px;
+              border:2px solid #dbe2ea;
+              background:#f8fafc;
+              font-weight:700;
+              font-size:14px;
+              color:#1f2937;
+              text-align:center;
+              cursor:pointer;
+              transition:.28s;
+              box-shadow:
+              0 3px 10px rgba(0,0,0,.04);
+          }
+
+          .toggle-button:hover{
+              border-color:#0b3a78;
+              transform:translateY(-2px);
+              box-shadow:
+              0 8px 20px rgba(11,58,120,.12);
+          }
+          .toggle-radio:checked + .toggle-button {
+            background: linear-gradient(135deg, #0b3a78, #1458b5);
+            color: white;
+            border-color: #0b3a78;
+            box-shadow: 0 12px 30px rgba(11, 58, 120, 0.25);
+          }
+
+          
+          @media(max-width:576px){
+              .toggle-button{
+                  font-size:10px !important;
+              }
+          }
+
+          .form-control,
+          .form-select {
+            min-height: 52px;
+            border: 1px solid #d1d5db !important;
+            border-radius: 14px;
+            color: #111827 !important;
+            font-size: 15px;
+            box-shadow: none !important;
+            transition: .25s;
+          }
+
+          .form-control:focus,
+          .form-select:focus {
+            border-color: #0b3a78 !important;
+            box-shadow: 0 0 0 4px rgba(11, 58, 120, .12) !important;
+          }
+
+          #card-body-display-success {
+            background:
+              linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+          }
+
+          #calculation-instruction {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 18px;
+            padding: 18px;
+            color: #64748b;
+          }
+
+          #tile-size-calculation,
+          #total-area-calculation,
+          #tiles-needed-calculation {
+            margin-top: 18px;
+          }
+
+          #tile-size-calculation p,
+          #total-area-calculation p,
+          #tiles-needed-calculation p {
+            background: #f8fafc;
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+          }
+
+          #tiles-needed-calculation .card {
+            background: linear-gradient(135deg, #092b66, #0b4ca3) !important;
+            border-radius: 24px;
+            box-shadow:
+              0 15px 35px rgba(9, 43, 102, .25),
+              0 30px 80px rgba(9, 43, 102, .18);
+            margin-top: 24px;
+          }
+
+          .result_text {
+            font-size: 18px;
+            line-height: 1.8;
+          }
+
+          .shop_link {
+            text-decoration: none !important;
+            color: #db5151 !important;
+            cursor: pointer !important;
+          }
+
+          .shop_link:hover {
+            text-decoration: underline !important;
+          }
+
+          .hide {
+            display: none;
+          }
+
+          @media(max-width:768px) {
+            body {
+              padding: 24px 0;
+            }
+
+            .container {
+              padding-left: 16px;
+              padding-right: 16px;
+            }
+
+            .card-body {
+              padding: 24px;
+            }
+
+            .first-card,
+            .second-card {
+              min-height: auto;
+            }
+
+            .second-card {
+              margin-top: 28px;
+            }
+
+            h3 {
+              font-size: 22px;
+            }
+
+            h5 {
+              font-size: 23px;
+            }
+
+            .form-check {
+              margin-bottom: 12px;
+            }
+
+            .result_text {
+              font-size: 16px;
+            }
+
+            .result-unit-convertion{
+              margin-top: 10px;
+            }
+          }
+          .transition-icon{
+              transition:.3s;
+          }
+          .rotate-icon{
+              transform:rotate(180deg);
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container mb-5">
+            <h1 class="mb-3">TILE CALCULATOR</h1>
+            <p>This tile calculator tool helps estimate the total number of tiles needed to cover a surface.</p>
+            <p>It also accounts for extra tiles to allow for cutting, waste, and future repairs, and calculates the estimated price range to help you determine your total budget for the purchase.</p>
+        </div>
+        <div class="container mt-5 mb-5">
+
+          <div class="container zero-card mb-3">
+            <div class="card shadow-lg border border-dark rounded-4 overflow-hidden">
+              <div class="card-header bg-light py-4 unit-toggle-header" style="cursor:pointer;">
+                  <div class="container">
+                      <div class="d-flex justify-content-center align-items-center gap-3">
+                          <h4 class="mb-0 fw-bold">Unit Converter</h4>
+                          <i class="fa-solid fa-chevron-down toggle-icon transition-icon"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-body" style="display: none;">
+                 <div class="container">
+                    <div class="row">
+                      <div class="col-sm-6">
+                          <p class="fw-bold">From</p>
+                          <div class="row">
+                              <div class="col-12 col-md-7">
+                                  <small>Value</small>
+                                  <input type="text" class="form-control" id="toValue" placeholder="Enter Value">
+                              </div>
+                              <div class="col-12 col-md-5">
+                                  <small class="text-sm-start">Unit</small>
+                                  <select class="form-select" id="toUnit">
+                                    <option selected disabled>Select Unit</option>
+                                    <option value="square_meter">Square Meter (m²)</option>
+                                    <option value="meter">Meter</option>
+                                    <option value="kilometer">Kilometer</option>
+                                    <option value="centimeter">Centimeter</option>
+                                    <option value="millimeter">Millimeter</option>
+                                    <option value="micrometer">Micrometer</option>
+                                    <option value="nanometer">Nanometer</option>
+                                    <option value="mile">Mile</option>
+                                    <option value="yard">Yard</option>
+                                    <option value="square_foot">Square Foot (ft²)</option>
+                                    <option value="foot">Foot</option>
+                                    <option value="inch">Inch</option>
+                                </select>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-sm-6 result-unit-convertion readonly">
+                          <p class="fw-bold">To</p>
+                          <div class="row">
+                            <div class="col-12 col-md-7">
+                                <small class="text-sm-start">Value</small>
+                                <input type="text" class="form-control" id="fromValue" disabled>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <small class="text-sm-start">Unit</small>
+                                <select class="form-select" id="fromUnit">
+                                    <option selected disabled>Select Unit</option>
+                                    <option value="square_meter">Square Meter (m²)</option>
+                                    <option value="meter">Meter</option>
+                                    <option value="kilometer">Kilometer</option>
+                                    <option value="centimeter">Centimeter</option>
+                                    <option value="millimeter">Millimeter</option>
+                                    <option value="micrometer">Micrometer</option>
+                                    <option value="nanometer">Nanometer</option>
+                                    <option value="mile">Mile</option>
+                                    <option value="yard">Yard</option>
+                                    <option value="square_foot">Square Foot (ft²)</option>
+                                    <option value="foot">Foot</option>
+                                    <option value="inch">Inch</option>
+                                </select>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-sm-5">
+              <div class="card first-card">
+                <div class="card-body">
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-sm-12 center-item">
+                        <div class="container">
+                          <h3 class="text-center cool-text-yellow mb-4 mt-2">AREA TO COVER</h3>
+                          <div class="container">
+                            <div class="row g-3">
+                              <div class="col-6">
+                                  <div class="toggle-item">
+                                      <input
+                                      class="toggle-radio"
+                                      id="dimensions"
+                                      type="radio"
+                                      name="measurement"
+                                      onclick="areaToCover('dimensions')">
+                                      <label
+                                      class="toggle-button"
+                                      for="dimensions">
+                                          Dimensions
+                                      </label>
+                                  </div>
+                              </div>
+                              <div class="col-6">
+                                  <div class="toggle-item">
+                                      <input
+                                      class="toggle-radio"
+                                      id="totalArea"
+                                      type="radio"
+                                      name="measurement"
+                                      onclick="areaToCover('totalArea')"
+                                      checked>
+                                      <label
+                                      class="toggle-button"
+                                      for="totalArea">
+                                          Total Area
+                                      </label>
+                                  </div>
+                              </div>
+                          </div>
+                          </div>
+                          <div class="row mt-4" style="display: none;" id="dimensions_container">
+                            <div class="col-sm-6">
+                              <input type="number" id="dimensions_length_search" style="border: 1px solid black; color: black;" placeholder="Length" class="form-control">
+                              <div id="dimensions-validation-length-value"></div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="mb-3">
+                                <select class="form-select w-100" id="dimensions_length_unit">
+                                  <option value="" selected>Unit</option>
+                                  <option value="cm">cm</option>
+                                  <option value="inches">inches</option>
+                                  <option value="feet">feet</option>
+                                  <option value="meters">meters</option>
+                                </select>
+                                <div id="dimensions-validation-length-unit"></div>
+                              </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <input type="number" style="border: 1px solid black; color: black;" id="dimensions_width_search" placeholder="Width" class="form-control">
+                              <div id="dimensions-validation-width-value"></div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="mb-3">
+                                <select class="form-select w-100" id="dimensions_width_unit">
+                                  <option value="" selected>Unit</option>
+                                  <option value="cm">cm</option>
+                                  <option value="inches">inches</option>
+                                  <option value="feet">feet</option>
+                                  <option value="meters">meters</option>
+                                </select>
+                                <div id="dimensions-validation-width-unit"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row mt-4" id="totalarea_container">
+                            <div class="container">
+                              <div class="row">
+                                <div class="col-sm-6">
+                                  <input type="number" style="border: 1px solid black; color: black;" value="" id="totalarea_search_value" placeholder="Total Area" class="form-control">
+                                  <div id="totalarea-validation-value"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                  <div class="mb-3">
+                                    <select class="form-select w-100" id="totalarea_search_unit">
+                                      <option value="" selected>Unit</option>
+                                      <option value="square_feet">Square Feet</option>
+                                      <option value="square_meters">Square Meters</option>
+                                    </select>
+                                    <div id="totalarea-validation-unit"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12 center-item">
+                        <div class="container">
+                          <h3 class="text-center cool-text-yellow mb-4 mt-4">TILE MEASUREMENT</h3>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <input type="number" style="border: 1px solid black; color: black;" id="tileLengthValue" placeholder="Length" class="form-control">
+                              <div id="tile-validation-length-value"></div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="mb-3">
+                                <select class="form-select w-100" id="tileLengthUnit">
+                                  <option value="" selected>Unit</option>
+                                  <option value="cm">cm</option>
+                                  <option value="inches">inches</option>
+                                </select>
+                                <div id="tile-validation-length-unit"></div>
+                              </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <input type="number" style="border: 1px solid black; color: black;" id="tileWidthValue" placeholder="Width" class="form-control">
+                              <div id="tile-validation-width-value"></div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="mb-3">
+                                <select class="form-select w-100" id="tileWidthUnit">
+                                  <option value="" selected>Unit</option>
+                                  <option value="cm">cm</option>
+                                  <option value="inches">inches</option>
+                                </select>
+                                <div id="tile-validation-width-unit"></div>
+                              </div>
+                            </div>
+                            <div class="col-sm-12">
+                              <input type="number" style="border: 1px solid black; color: black;" id="tilePrice" placeholder="Tile price per piece (Optional)" class="form-control">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-7" style="margin-bottom: 50px;">
+              <div class="card second-card" style="width: 100%; height: 100%;">
+                <div class="card-body hide" id="card-body-display-error"></div>
+                <div class="card-body" id="card-body-display-success">
+                  <div class="container">
+                    <br />
+                    <h5>
+                      <strong class="cool-text-yellow">Calculation</strong>
+                    </h5>
+                    <p id="calculation-instruction" class="cool-text-black">
+                      <strong>Complete all fields to calculate tiles needed.</strong>
+                    </p>
+                    <div id="tile-size-calculation"></div>
+                    <div id="total-area-calculation"></div>
+                    <div id="tiles-needed-calculation"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container mt-5">
+            <h2 class="mb-3">FOLLOW THESE STEPS</h2>
+            <ol>
+                <li><p>Measure the length and width of your chosen tile, then enter the values into the tile calculator.</p></li>
+                <li><p>Identify the cost per tile and input the corresponding amount.</p></li>
+                <li><p>Measure the area you want to cover. You can do this in two ways:</p>
+                    <ul>
+                        <li><p>Enter the total area (in square meters or square feet).</p></li>
+                        <li>
+                            <p>Enter the dimensions (length and width) in units such as centimeters, inches, or feet. <br />
+                            After measuring, input the values into the calculator.</p>
+                        </li> 
+                        <li>
+                            <p>Once all fields are completed, the calculator will automatically display the number of tiles required,
+                            including an additional 5 – 10% allowance for cutting, waste, and potential future repairs. It will also calculate the estimated price range to help you determine your overall budget for the purchase.</p>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+            <p>
+                For the latest product updates, installation tips, inspirational project galleries, and special promotions, we encourage you to visit our official
+                <a href="https://www.facebook.com/WorldwideHomeDepot/" target="_blank">Facebook page.</a>
+                If, during the calculation or planning process, you encounter any complex scenarios or have specific questions regarding tile types or installation best practices, 
+                please do not hesitate to <a href="https://www.worldwidehomedepot.ph/contact/" target="_blank">contact us</a> directly. We are here to help you achieve a professional, stunning finish on every surface.
+            </p>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        
+            <script>
+              // start of the unit convertion
+
+              $(document).ready(function(){
+
+                $('.unit-toggle-header').click(function(){
+                    $(this)
+                    .closest('.card')
+                    .find('.card-body')
+                    .slideToggle(250);
+                    $(this)
+                    .find('.toggle-icon')
+                    .toggleClass('rotate-icon');
+                });
+
+                function convertUnits(){
+                    const value=parseFloat($('#toValue').val());
+                    const fromUnit=$('#toUnit').val();
+                    const toUnit=$('#fromUnit').val();
+                    const lengthUnits=[
+                        'meter',
+                        'kilometer',
+                        'centimeter',
+                        'millimeter',
+                        'micrometer',
+                        'nanometer',
+                        'mile',
+                        'yard',
+                        'foot',
+                        'inch'
+                    ];
+                    const areaUnits=[
+                        'square_meter',
+                        'square_foot'
+                    ];
+                    function getUnitType(unit){
+                        if(lengthUnits.includes(unit)){
+                            return 'length';
+                        }
+                        if(areaUnits.includes(unit)){
+                            return 'area';
+                        }
+                        return null;
+                    }
+                    const fromType=getUnitType(fromUnit);
+                    const toType=getUnitType(toUnit);
+                    $('#fromValue')
+                        .removeClass('is-invalid')
+                        .css({
+                            color:'',
+                            fontWeight:''
+                        });
+                    if(isNaN(value) || !fromUnit || !toUnit){
+                        $('#fromValue').val('');
+                        return;
+                    }
+                    if(fromType !== toType){
+                        $('#fromValue')
+                            .val('Not possible to convert')
+                            .addClass('is-invalid')
+                            .css({
+                                color:'#dc3545',
+                                fontWeight:'700'
+                            });
+                        return;
+                    }
+                    let baseValue=0;
+                    if(fromType === 'length'){
+                        switch(fromUnit){
+                            case 'meter': baseValue=value; break;
+                            case 'kilometer': baseValue=value*1000; break;
+                            case 'centimeter': baseValue=value/100; break;
+                            case 'millimeter': baseValue=value/1000; break;
+                            case 'micrometer': baseValue=value/1000000; break;
+                            case 'nanometer': baseValue=value/1000000000; break;
+                            case 'mile': baseValue=value*1609.34; break;
+                            case 'yard': baseValue=value*0.9144; break;
+                            case 'foot': baseValue=value*0.3048; break;
+                            case 'inch': baseValue=value*0.0254; break;
+                        }
+                        let result=0;
+                        switch(toUnit){
+                            case 'meter': result=baseValue; break;
+                            case 'kilometer': result=baseValue/1000; break;
+                            case 'centimeter': result=baseValue*100; break;
+                            case 'millimeter': result=baseValue*1000; break;
+                            case 'micrometer': result=baseValue*1000000; break;
+                            case 'nanometer': result=baseValue*1000000000; break;
+                            case 'mile': result=baseValue/1609.34; break;
+                            case 'yard': result=baseValue/0.9144; break;
+                            case 'foot': result=baseValue/0.3048; break;
+                            case 'inch': result=baseValue/0.0254; break;
+                        }
+                        $('#fromValue').val(result.toLocaleString());
+                    }
+                    if(fromType === 'area'){
+                        switch(fromUnit){
+                            case 'square_meter': baseValue=value; break;
+                            case 'square_foot': baseValue=value*0.09290304; break;
+                        }
+                        let result=0;
+                        switch(toUnit){
+                            case 'square_meter': result=baseValue; break;
+                            case 'square_foot': result=baseValue/0.09290304; break;
+                        }
+                        $('#fromValue').val(result.toLocaleString());
+                    }
+                }
+
+                $('#toValue,#toUnit,#fromUnit').on('input change',function(){
+                    convertUnits();
+                });
+              });
+
+              // end of the unit convertion
+                jQuery(document).ready(function($) {
+                    window.areaToCover = function(type) {
+                        if (type === 'dimensions') {
+                            $('#dimensions_container').show();
+                            $('#totalarea_container').hide();
+                            $('.dimensions_display_container').show();
+                            $('.total_area_display_container').hide();
+                            $('#totalarea_search_value').val('');
+                            $('#dimensions_width_unit').prop('selectedIndex', 0);
+                            $('#dimensions_length_unit').prop('selectedIndex', 0);
+                        } else {
+                            $('#dimensions_container').hide();
+                            $('#totalarea_container').show();
+                            $('.total_area_display_container').show();
+                            $('.dimensions_display_container').hide();
+                            $('#dimensions_width_search').val('');
+                            $('#dimensions_length_search').val('');
+                            $('#totalarea_search_unit').prop('selectedIndex', 0);
+                        }
+                        updateDisplay();
+                    };
+
+
+                    function updateDisplay() {
+                                const tileLengthValue = $('#tileLengthValue').val();
+                                const tileLengthUnit = $('#tileLengthUnit').val();
+                                const tileWidthValue = $('#tileWidthValue').val();
+                                const tileWidthUnit = $('#tileWidthUnit').val();
+
+                                const totalAreaValue = $('#totalarea_search_value').val();
+                                const totalAreaUnit = $('#totalarea_search_unit').val();
+                                const dimension_length_unit = $('#dimensions_length_unit').val();
+                                const dimension_width_unit = $('#dimensions_width_unit').val();
+                                const dimension_length_search = $('#dimensions_length_search').val();
+                                const dimension_width_search = $('#dimensions_width_search').val();
+
+                                const tilePriceValue = $('#tilePrice').val();
+
+                                // for input display
+                                // $('#tilePrice_display').text(tilePriceValue);
+
+                                $('#input_length_value').text(tileLengthValue);
+                                $('#input_length_unit').text(tileLengthUnit);
+                                $('#input_width_value').text(tileWidthValue);
+                                $('#input_width_unit').text(tileWidthUnit);
+
+                                const html_tile_size = `
+                                    <p class="cool-text-black">
+                                        <strong>
+                                            <span id="num1_value_meters"></span> <span id="num1_unit_meters"></span>
+                                            x
+                                            <span id="num2_value_meters"></span> <span id="num2_unit_meters"></span>
+                                            =
+                                            <span id="result_tile_size"></span>
+                                        </strong>
+                                    </p>`;
+                                const html_area_to_cover = `
+                                        <p class="cool-text-black">
+                                            <strong><span id="num1_value_areaToCover"></span> x <span id="num2_value_areaToCover"></span> = <span id="result_area_to_cover"></span></strong>
+                                        </p>`;
+                            let html_tiles_needed = `
+                                        <h5 class="cool-text-yellow"><strong>Tiles Needed</strong></h5>
+                                        <p class="cool-text-black">
+                                            <strong><span id="num1_tilesneeded_value"></span> / <span id="num2_tilesneeded_value"></span> = <span id="result_tiles_needed"></span></strong>
+                                        </p>`;
+
+                                    // Add Total Price section only if tilePriceValue is not empty or zero
+                                    if (tilePriceValue !== '' && parseFloat(tilePriceValue) !== 0) {
+                                        html_tiles_needed += `
+                                            <h5 class="cool-text-yellow"><strong>Total Price</strong></h5>
+                                            <p class="cool-text-black">
+                                                <strong><span id="result_tiles_needed_for_price"></span> x <span id="input_price"></span> = ₱<span id="total_price"></span></strong>
+                                            </p>`;
+                                    }
+
+                                    // Add the card section
+                                    html_tiles_needed += `
+                                        <div class="card w-100" style="background-color: #092b66;">
+                                            <div class="card-body"> 
+                                                <p class="text-dark result_text">
+                                                    <strong>Tiles Needed: <span id="final_result_tiles_needed"></span></strong>
+                                                </p>
+                                                <p class="text-dark result_text">
+                                                    <strong>
+                                                        It’s recommended to purchase 5 – 10% extra (about <strong id="five_percent_result"></strong> – <strong id="ten_percent_result"></strong> tiles)
+                                                        to account for cutting, waste, and possible future repairs.
+                                                    </strong>
+                                                </p>`;
+                                                
+                                    if (tilePriceValue !== '' && parseFloat(tilePriceValue) !== 0) {
+                                        html_tiles_needed += `
+                                                <p class="text-dark result_text">
+                                                    <strong>
+                                                        The estimated cost for the tiles is ₱<span id="five_percent_price_result"></span> – ₱<span id="ten_percent_price_result"></span>.
+                                                    </strong>
+                                                </p>`;
+                                    }
+
+                                    html_tiles_needed += `
+                                                <p class="text-dark result_text">
+                                                    <strong>
+                                                        Ready to choose your design? 
+
+                                                        <span class="text-danger">
+                                                            <a class="shop_link" href="https://branch.worldwidehomedepot.ph/mandaue/select-category/" target="_blank">
+                                                                Click here
+                                                            </a>
+                                                        </span> 
+
+                                                        to shop our available tile styles and finishes.
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>`;
+                                                
+
+                                let resultTileSize;
+                                let resultTotalArea;
+
+                                // validation
+                                let hasError = false;
+                                $("#tile-validation-length-value, #tile-validation-length-unit, #tile-validation-width-value, #tile-validation-width-unit").empty();
+                                $("#dimensions-validation-length-value, #dimensions-validation-length-unit, #dimensions-validation-width-value, #dimensions-validation-width-unit").empty();
+                                $("#totalarea-validation-value, #totalarea-validation-unit").empty();
+                                $("#card-body-display-success").show();
+                                $("#card-body-display-error").empty().hide();
+                                
+
+                                if (parseFloat(tileLengthValue) < 0 ) {
+                                    $("#tile-validation-length-value").html('<p class="cool-text-red">Enter a positive value.</p>');
+                                }
+                                if (parseFloat(tileWidthValue) < 0) {
+                                    $("#tile-validation-width-value").html('<p class="cool-text-red">Enter a positive value.</p>');
+                                }
+                                if (parseFloat(tileLengthValue) == 0) {
+                                    $("#tile-validation-length-value").html('<p class="cool-text-red">Value cannot be zero.</p>');
+                                }
+                                if (parseFloat(tileWidthValue) == 0) {
+                                    $("#tile-validation-width-value").html('<p class="cool-text-red">Value cannot be zero.</p>');
+                                }
+                                if (tileLengthValue === '') {
+                                    $("#tile-validation-length-value").html('<p class="cool-text-red">Enter a value.</p>');
+                                }
+                                if (tileLengthUnit === '') {
+                                    $("#tile-validation-length-unit").html('<p class="cool-text-red">Choose a unit</p>');
+                                }
+                                if (tileWidthValue === '') {
+                                    $("#tile-validation-width-value").html('<p class="cool-text-red">Enter a value.</p>');
+                                }
+                                if (tileWidthUnit === '') {
+                                    $("#tile-validation-width-unit").html('<p class="cool-text-red">Choose a unit</p>');
+                                }
+
+                                
+                                if ($('#dimensions_container').is(':visible')) {
+                                    if (parseFloat(dimension_length_search) == 0) {
+                                        $("#dimensions-validation-length-value").html('<p class="cool-text-red">Value cannot be zero.</p>');
+                                    }
+                                    if (parseFloat(dimension_width_search) == 0) {
+                                        $("#dimensions-validation-width-value").html('<p class="cool-text-red">Value cannot be zero.</p>');
+                                    }
+                                    if (parseFloat(dimension_length_search) < 0) {
+                                        $("#dimensions-validation-length-value").html('<p class="cool-text-red">Enter a positive value.</p>');
+                                    }
+                                    if (parseFloat(dimension_width_search) < 0) {
+                                        $("#dimensions-validation-width-value").html('<p class="cool-text-red">Enter a positive value.</p>');
+                                    }
+                                    if (dimension_length_search === '') {
+                                        $("#dimensions-validation-length-value").html('<p class="cool-text-red">Enter a value.</p>');
+                                    }
+                                    if (dimension_length_unit === '') {
+                                        $("#dimensions-validation-length-unit").html('<p class="cool-text-red">Choose a unit</p>');
+                                    }
+                                    if (dimension_width_search === '') {
+                                        $("#dimensions-validation-width-value").html('<p class="cool-text-red">Enter a value.</p>');
+                                    }
+                                    if (dimension_width_unit === '') {
+                                        $("#dimensions-validation-width-unit").html('<p class="cool-text-red">Choose a unit</p>');
+                                    }
+                                } else if ($('#totalarea_container').is(':visible')) {
+                                    if (parseFloat(totalAreaValue) == 0) {
+                                        $("#totalarea-validation-value").html('<p class="cool-text-red">Value cannot be zero.</p>');
+                                    }
+                                    if (parseFloat(totalAreaValue) < 0) {
+                                        $("#totalarea-validation-value").html('<p class="cool-text-red">Enter a positive value.</p>');
+                                    }
+                                    if (totalAreaValue === '') {
+                                        $("#totalarea-validation-value").html('<p class="cool-text-red">Enter a value.</p>');
+                                    }
+                                    if (totalAreaUnit === '') {
+                                        $("#totalarea-validation-unit").html('<p class="cool-text-red">Choose a unit</p>');
+                                    }
+                                }
+                            
+
+                                // display the calculation for cm
+                            if(tileLengthUnit === 'cm' && tileWidthUnit === 'cm' && tileLengthValue !== '' && tileWidthValue !== ''){
+                                    $("#tile-size-calculation").empty();
+                                    $("#total-area-calculation").empty();
+                                    $("#tiles-needed-calculation").empty();
+                                    $("#calculation-instruction").hide();
+                                    $("#tile-size-calculation").empty().append(html_tile_size);
+
+                                    $('#num1_value_meters').text(tileLengthValue);
+                                    $('#num1_unit_meters').text(tileLengthUnit);
+                                    $('#num2_value_meters').text(tileWidthValue);
+                                    $('#num2_unit_meters').text(tileWidthUnit);
+                                    // calculation for width and length for cm tile size
+                                    resultTileSize = tileLengthValue * tileWidthValue;
+                                    $('#result_tile_size').text(resultTileSize.toLocaleString('en-US') + ' cm²');
+                                
+                                    switch (true) {
+                                        case (totalAreaUnit === 'square_meters' && totalAreaValue !== ''): {
+                                            const defaultValue = 10000;
+                                            
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+                                            
+                                            $('#num1_value_areaToCover').text(totalAreaValue + ' m²');
+                                            const formattedResult_defaultValue = defaultValue.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_defaultValue + ' cm²/m²');
+
+                                            resultTotalArea = totalAreaValue * defaultValue;
+                                            const formattedResult_sqm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_sqm + ' cm²');
+                                            break;
+                                        }
+                                        case (totalAreaUnit === 'square_feet' && totalAreaValue !== ''): {
+                                            const defaultValue = 929.03;
+                                            
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            $('#num1_value_areaToCover').text(totalAreaValue + ' ft²');
+                                            const formattedResult_defaultValue = defaultValue.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_defaultValue + ' cm²/ft²');
+
+                                            resultTotalArea = totalAreaValue * defaultValue;
+                                            const formattedResult_sqm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_sqm + ' cm²');
+                                            break;
+                                        }
+                                        case (dimension_length_unit === 'cm' && dimension_width_unit === 'cm' && dimension_length_search !== '' && dimension_width_search !== ''): {
+
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text(dimension_length_search + ' ' + dimension_length_unit);
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_dimension_width_search + ' ' + dimension_length_unit);
+
+                                            resultTotalArea = dimension_length_search * dimension_width_search;
+                                            const formattedResult_cm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_cm + ' cm²');
+                                            break;
+                                        }
+                                        case (dimension_length_unit === 'inches' && dimension_width_unit === 'inches' && dimension_length_search !== '' && dimension_width_search !== ''): {
+                                            const defaultValue = 2.54;
+                                            
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text('(' + formattedResult_dimension_length_search + ' ' + dimension_length_unit + ' x ' + defaultValue + ' cm/inch)');
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text('(' + formattedResult_dimension_width_search + ' ' + dimension_width_unit + ' x ' + defaultValue + ' cm/inch)');
+
+                                            resultTotalArea = (dimension_length_search * defaultValue) * (dimension_width_search * defaultValue);
+                                            const formattedResult_inch = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_inch + ' cm²');
+                                            break;
+                                        }
+                                        case (dimension_length_unit === 'feet' && dimension_width_unit === 'feet' && dimension_length_search !== '' && dimension_width_search !== ''): {
+                                            const defaultValue = 929.0304;
+                                            
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text('(' + formattedResult_dimension_length_search + ' ' + dimension_length_unit);
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_dimension_width_search + ' ' + dimension_length_unit + ') x ' + defaultValue);
+
+                                            resultTotalArea = (dimension_length_search * dimension_width_search) * defaultValue;
+                                            const formattedResult_feet = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_feet + ' cm²');
+                                            break;
+                                        }
+                                        case (dimension_length_unit === 'meters' && dimension_width_unit === 'meters' && dimension_length_search !== '' && dimension_width_search !== ''): {
+                                            const defaultValue = 100;
+                                            
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text('(' + formattedResult_dimension_length_search + ' ' + dimension_length_unit + ' x ' + defaultValue + ' cm/m )');
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text('(' + formattedResult_dimension_width_search + ' ' + dimension_width_unit + ' x ' + defaultValue + ' cm/m )');
+
+                                            resultTotalArea = (dimension_length_search * defaultValue) * (dimension_width_search * defaultValue);
+                                            const formattedResult_meters = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_meters + ' cm²');
+                                            break;
+                                        }
+                                        default: {
+                                            $("#total-area-calculation").empty();
+                                        }
+                                    }
+                                    
+                                    // display the calculation for the total tiles needed
+                                    if(resultTileSize && resultTotalArea){
+                                        $("#tiles-needed-calculation").empty().append(html_tiles_needed);
+
+                                        const tiles_needed = Math.ceil(resultTotalArea / resultTileSize);
+                                        const formattedTilesNeeded = tiles_needed.toLocaleString('en-US');
+                                        const num1_tilesneeded_value = resultTotalArea.toLocaleString('en-US');
+                                        const num2_tilesneeded_value = resultTileSize.toLocaleString('en-US');
+
+                                        $('#num1_tilesneeded_value').text(num1_tilesneeded_value + ' cm²');
+                                        $('#num2_tilesneeded_value').text(num2_tilesneeded_value + ' cm²');
+                                        $('#result_tiles_needed').text(formattedTilesNeeded + ' Tiles');
+                                        $('#final_result_tiles_needed').text(formattedTilesNeeded + ' Pieces');
+                                        
+                                        const tilePrice = $('#tilePrice').val();
+                                        const tilePrice_string = tilePrice.toLocaleString('en-US');
+                                        $('#result_tiles_needed_for_price').text(formattedTilesNeeded + ' Tiles');
+                                        $('#input_price').text(tilePrice + ' Pesos');
+                                        const totalPrice = tiles_needed * tilePrice;
+                                        const formattedtotalPrice = totalPrice.toLocaleString('en-US');
+                                        $('#total_price').text(formattedtotalPrice + ' Pesos');
+
+                                        // for 5 to 10 percent calculation
+                                        const result_five_percent = Math.ceil(tiles_needed * 0.05);
+                                        const five_percent_total = result_five_percent + tiles_needed;
+                                        const five_percent_formatted = five_percent_total.toLocaleString('en-US')
+                                        $('#five_percent_result').text(five_percent_formatted);
+                                        // for 10% calculation
+                                        const result_ten_percent = Math.ceil(tiles_needed * 0.10);
+                                        const ten_percent_total = result_ten_percent + tiles_needed;
+                                        const ten_percent_formatted = ten_percent_total.toLocaleString('en-US')
+                                        $('#ten_percent_result').text(ten_percent_formatted);
+
+                                        console.log("PISTING YAWA MAO ING SAYUP: " + ten_percent_formatted);
+
+                                        //for 5% to 10% price calculation
+                                        const result_five_percent_price = Math.ceil(totalPrice * 0.05);
+                                        const five_percent_total_price = result_five_percent_price + totalPrice;
+                                        const five_percent_formatted_price = five_percent_total_price.toLocaleString('en-US')
+                                        $('#five_percent_price_result').text(five_percent_formatted_price);
+
+                                        const result_ten_percent_price = Math.ceil(totalPrice * 0.10);
+                                        const ten_percent_total_price = result_ten_percent_price + totalPrice;
+                                        const ten_percent_formatted_price = ten_percent_total_price.toLocaleString('en-US')
+                                        $('#ten_percent_price_result').text(ten_percent_formatted_price);
+
+                                    } else {
+                                        $("#tiles-needed-calculation").empty();
+                                    }
+                                } else if(tileLengthUnit === 'inches' && tileWidthUnit === 'inches' && tileLengthValue !== '' && tileWidthValue !== ''){
+                                    $("#tile-size-calculation").empty();
+                                    $("#total-area-calculation").empty();
+                                    $("#tiles-needed-calculation").empty();
+                                    $("#calculation-instruction").hide();
+                                    const totalAreaValue = $('#totalarea_search_value').val();
+                                    const totalAreaUnit = $('#totalarea_search_unit').val();
+                                    const dimension_length_unit = $('#dimensions_length_unit').val();
+                                    const dimension_width_unit = $('#dimensions_width_unit').val();
+                                    const dimension_length_search = $('#dimensions_length_search').val();
+                                    const dimension_width_search = $('#dimensions_width_search').val();
+
+                                    switch (true) {
+                                        case (totalAreaUnit === 'square_meters' && totalAreaValue !== ''): {
+                                            const defaultValue = 10000;
+                                            $("#tile-size-calculation").empty().append(html_tile_size);
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            $('#num1_value_meters').text('(' + tileLengthValue + ' ' + tileLengthUnit + ' x ' + 2.54 + ')');
+                                            $('#num2_value_meters').text('(' + tileWidthValue + ' ' + tileWidthUnit + ' x ' + 2.54 + ')');
+
+                                            resultTileSize = (tileLengthValue * 2.54) * (tileWidthValue * 2.54);
+                                            $('#result_tile_size').text(resultTileSize.toLocaleString('en-US') + ' cm²');
+                                                
+                                            $('#num1_value_areaToCover').text(totalAreaValue + ' m²');
+                                            const formattedResult_defaultValue = defaultValue.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_defaultValue + ' cm²/m²');
+
+                                            resultTotalArea = totalAreaValue * defaultValue;
+                                            const formattedResult_sqm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_sqm + ' cm²');
+                                            break;
+                                        }
+                                        case (totalAreaUnit === 'square_feet' && totalAreaValue !== ''): {
+                                            const defaultValue = 144;
+                                            $("#tile-size-calculation").empty().append(html_tile_size);
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            $('#num1_value_meters').text(tileLengthValue + ' ' + tileLengthUnit);
+                                            $('#num2_value_meters').text(tileWidthValue + ' ' + tileWidthUnit);
+
+                                            resultTileSize = tileLengthValue * tileWidthValue;
+                                            $('#result_tile_size').text(resultTileSize.toLocaleString('en-US') + ' in²');
+
+                                            $('#num1_value_areaToCover').text(totalAreaValue + ' ft²');
+                                            const formattedResult_defaultValue = defaultValue.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_defaultValue + ' in²/ft²');
+
+                                            resultTotalArea = totalAreaValue * defaultValue;
+                                            const formattedResult_sft = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_sft + ' in²');
+                                            break;
+                                        }
+                                        case (dimension_length_unit === 'cm' && dimension_width_unit === 'cm' && dimension_length_search !== '' && dimension_width_search !== ''): {
+                                            const defaultValue = 2.54;
+                                            $("#tile-size-calculation").empty().append(html_tile_size);
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            $('#num1_value_meters').text('(' + tileLengthValue + ' ' + tileLengthUnit + ' x ' + defaultValue + ' cm/inch' + ')');
+                                            $('#num2_value_meters').text('(' + tileWidthValue + ' ' + tileWidthUnit + ' x ' + defaultValue + ' cm/inch' + ')');
+
+                                            resultTileSize = (tileLengthValue * defaultValue) * (tileWidthValue * defaultValue);
+                                            $('#result_tile_size').text(resultTileSize.toLocaleString('en-US') + ' cm²');
+                                            
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text(formattedResult_dimension_length_search + ' ' + dimension_length_unit);
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_dimension_width_search + ' ' + dimension_length_unit);
+
+                                            resultTotalArea = dimension_length_search * dimension_width_search;
+                                            const formattedResult_cm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_cm + ' cm²');
+                                            break;
+                                        }
+                                        case (dimension_length_unit === 'inches' && dimension_width_unit === 'inches' && dimension_length_search !== '' && dimension_width_search !== ''): {
+                                            $("#tile-size-calculation").empty().append(html_tile_size);
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            $('#num1_value_meters').text(tileLengthValue + ' ' + tileLengthUnit);
+                                            $('#num2_value_meters').text(tileWidthValue + ' ' + tileWidthUnit);
+
+                                            resultTileSize = tileLengthValue * tileWidthValue;
+                                            $('#result_tile_size').text(resultTileSize.toLocaleString('en-US') + ' in²');
+
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text(formattedResult_dimension_length_search + ' ' + dimension_length_unit);
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_dimension_width_search + ' ' + dimension_length_unit);
+
+                                            resultTotalArea = dimension_length_search * dimension_width_search;
+                                            const formattedResult_cm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_cm + ' cm²');
+                                            break;
+
+                                        }
+                                        case (dimension_length_unit === 'feet' && dimension_width_unit === 'feet' && dimension_length_search !== '' && dimension_width_search !== ''): {
+                                            const defaultValue = '12';
+                                            $("#tile-size-calculation").empty().append(html_tile_size);
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            $('#num1_value_meters').text(tileLengthValue + ' ' + tileLengthUnit);
+                                            $('#num2_value_meters').text(tileWidthValue + ' ' + tileWidthUnit);
+
+                                            resultTileSize = tileLengthValue * tileWidthValue;
+                                            $('#result_tile_size').text(resultTileSize.toLocaleString('en-US') + ' in²');
+
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text(formattedResult_dimension_length_search + ' ' + dimension_length_unit);
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_dimension_width_search + ' ' + dimension_length_unit);
+
+                                            resultTotalArea = (dimension_length_search * defaultValue) * (dimension_width_search * defaultValue);
+                                            const formattedResult_cm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_cm + ' in²');
+                                            break;
+                                        }
+                                        case (dimension_length_unit === 'meters' && dimension_width_unit === 'meters' && dimension_length_search !== '' && dimension_width_search !== ''): {
+                                            const defaultValue = '2.54';
+                                            $("#tile-size-calculation").empty().append(html_tile_size);
+                                            $("#total-area-calculation").empty().append(html_area_to_cover);
+
+                                            $('#num1_value_meters').text('(' + tileLengthValue + ' ' + tileLengthUnit + ' x ' + defaultValue + ' cm/inch)' );
+                                            $('#num2_value_meters').text('(' + tileWidthValue + ' ' + tileWidthUnit + ' x ' + defaultValue + ' cm/inch)' );
+
+                                            resultTileSize = (tileLengthValue * defaultValue) * (tileWidthValue * defaultValue);
+                                            $('#result_tile_size').text(resultTileSize.toLocaleString('en-US') + ' cm²');
+
+                                            const formattedResult_dimension_length_search = dimension_length_search.toLocaleString('en-US');
+                                            $('#num1_value_areaToCover').text(formattedResult_dimension_length_search + ' ' + dimension_length_unit + ' x ' + 100 + ' cm/inch)' );
+                                            const formattedResult_dimension_width_search = dimension_width_search.toLocaleString('en-US');
+                                            $('#num2_value_areaToCover').text(formattedResult_dimension_width_search + ' ' + dimension_length_unit + ' x ' + 100 + ' cm/inch)' );
+
+                                            resultTotalArea = (dimension_length_search * 100) * (dimension_width_search * 100);
+                                            const formattedResult_cm = resultTotalArea.toLocaleString('en-US');
+                                            $('#result_area_to_cover').text(formattedResult_cm + ' in²');
+                                            break;
+                                        }
+                                        default: {
+                                            $("#calculation-instruction").show();
+                                            $("#total-area-calculation").empty(); // Clear if not applicable
+                                        }
+                                    }
+
+                                    // display the calculation for the total tiles needed
+                                    if(resultTileSize && resultTotalArea){
+                                        $("#tiles-needed-calculation").empty().append(html_tiles_needed);
+
+                                        const tiles_needed = Math.ceil(resultTotalArea / resultTileSize);
+                                        const formattedTilesNeeded = tiles_needed.toLocaleString('en-US');
+                                        const num1_tilesneeded_value = resultTotalArea.toLocaleString('en-US');
+                                        const num2_tilesneeded_value = resultTileSize.toLocaleString('en-US');
+
+                                        $('#num1_tilesneeded_value').text(num1_tilesneeded_value + ' cm²');
+                                        $('#num2_tilesneeded_value').text(num2_tilesneeded_value + ' cm²');
+                                        $('#result_tiles_needed').text(formattedTilesNeeded + ' Tiles');
+                                        $('#final_result_tiles_needed').text(formattedTilesNeeded + ' Pieces');
+
+                                        const tilePrice = $('#tilePrice').val();
+                                        const tilePrice_string = tilePrice.toLocaleString('en-US');
+                                        $('#result_tiles_needed_for_price').text(formattedTilesNeeded + ' Tiles');
+                                        $('#input_price').text(tilePrice + ' Pesos');
+                                        const totalPrice = tiles_needed * tilePrice;
+                                        const formattedtotalPrice = totalPrice.toLocaleString('en-US');
+                                        $('#total_price').text(formattedtotalPrice + ' Pesos');
+
+                                        // for 5 to 10 percent calculation
+                                        const result_five_percent = Math.ceil(tiles_needed * 0.05);
+                                        const five_percent_total = result_five_percent + tiles_needed;
+                                        const five_percent_formatted = five_percent_total.toLocaleString('en-US')
+                                        $('#five_percent_result').text(five_percent_formatted);
+                                        // for 10% calculation
+                                        const result_ten_percent = Math.ceil(tiles_needed * 0.10);
+                                        const ten_percent_total = result_ten_percent + tiles_needed;
+                                        const ten_percent_formatted = ten_percent_total.toLocaleString('en-US')
+                                        $('#ten_percent_result').text(ten_percent_formatted);
+                                        //for 5% to 10% price calculation
+                                        const result_five_percent_price = Math.ceil(totalPrice * 0.05);
+                                        const five_percent_total_price = result_five_percent_price + totalPrice;
+                                        const five_percent_formatted_price = five_percent_total_price.toLocaleString('en-US')
+                                        $('#five_percent_price_result').text(five_percent_formatted_price);
+
+                                        const result_ten_percent_price = Math.ceil(totalPrice * 0.10);
+                                        const ten_percent_total_price = result_ten_percent_price + totalPrice;
+                                        const ten_percent_formatted_price = ten_percent_total_price.toLocaleString('en-US')
+                                        $('#ten_percent_price_result').text(ten_percent_formatted_price);
+
+                                    } else {
+                                        $("#tiles-needed-calculation").empty();
+                                    }
+
+                                } else {
+                                    $("#calculation-instruction").show();
+                                    $("#tile-size-calculation").empty();
+                                }
+
+                                // area to cover radio toggle
+                                if ($('#totalArea').is(':checked')) {
+                                    $('#area_to_cover_label').text("Total Area:");
+                                    const totalarea_search_value = $('#totalarea_search_value').val();
+                                    const totalarea_search_unit = $('#totalarea_search_unit').find('option:selected').text();
+                                    $('#input_area_to_cover_value').text(totalarea_search_value);
+
+                                    if ($('#totalarea_search_unit').val() !== '') {
+                                        $('#input_area_to_cover_unit').text(totalarea_search_unit);
+                                    } else {
+                                        $('#totalarea_search_unit').prop('selectedIndex', 0);
+                                    }
+
+                                    $('#input_dimensions_length').text('');
+                                    $('#input_dimensions_width').text('');
+                                    $('#input_dimensions_length_unit').text('');
+                                    $('#input_dimensions_width_unit').text('');
+                                } else {
+                                    const dimensions_length_value = $('#dimensions_length_search').val();
+                                    const dimensions_length_unit = $('#dimensions_length_unit').val();
+                                    const dimensions_width_value = $('#dimensions_width_search').val();
+                                    const dimensions_width_unit = $('#dimensions_width_unit').val();
+                                    $('#input_area_to_cover_value').text('');
+                                    $('#input_area_to_cover_unit').text('');
+                                    $('#input_dimensions_length').text(dimensions_length_value);
+                                    $('#input_dimensions_width').text(dimensions_width_value);
+                                    $('#input_dimensions_length_unit').text(dimensions_length_unit);
+                                    $('#input_dimensions_width_unit').text(dimensions_width_unit);
+                                }
+                            }
+
+                    const selectors = [
+                        '#tileLengthValue',
+                        '#tileLengthUnit',
+                        '#tileWidthValue',
+                        '#tilePrice',
+                        '#tileWidthUnit',
+                        '#totalarea_search_value',
+                        '#totalarea_search_unit',
+                        '#dimensions_length_search',
+                        '#dimensions_length_unit',
+                        '#dimensions_width_search',
+                        '#dimensions_width_unit'
+                    ].join(', ');
+
+                    $(selectors).on('input change keyup', updateDisplay);
+
+                    $('#tileLengthUnit').on('change', function() {
+                        $('#tileWidthUnit').val($(this).val());
+                        updateDisplay();
+                    });
+
+                    $('#tileWidthUnit').on('change', function() {
+                        $('#tileLengthUnit').val($(this).val());
+                        updateDisplay();
+                    });
+
+                    $('#dimensions_length_unit').on('change', function() {
+                        $('#dimensions_width_unit').val($(this).val());
+                        updateDisplay();
+                    });
+
+                    $('#dimensions_width_unit').on('change', function() {
+                        $('#dimensions_length_unit').val($(this).val());
+                        updateDisplay();
+                    });
+
+                    updateDisplay();
+                });
+            </script>
+      </body>
+    </html>

@@ -1,0 +1,6171 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+      name="description"
+      content="Responsive room availability calendar booking system."
+    >
+
+    <title>Room Booking Calendar</title>
+
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    >
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    >
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    >
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+    <style>
+      :root {
+        --primary: #155eef;
+        --primary-dark: #0b4ed1;
+        --primary-light: #eaf1ff;
+
+        --success: #12b76a;
+        --success-dark: #067647;
+        --success-light: #b7f3cf;
+
+        --warning: #f79009;
+        --warning-dark: #b54708;
+        --warning-light: #ffe2a8;
+
+        --danger: #f04438;
+        --danger-dark: #b42318;
+        --danger-light: #ffc7c3;
+
+        --text: #172033;
+        --muted: #667085;
+        --border: #e4e7ec;
+        --background: #f4f7fb;
+        --white: #ffffff;
+
+        --shadow:
+          0 15px 45px rgba(16, 24, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(21, 94, 239, 0.1),
+            transparent 28%
+          ),
+          var(--background);
+        font-family: "Poppins", sans-serif;
+        overflow-x: hidden;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      button:focus-visible,
+      .room-option:focus-visible,
+      .time-slot:focus-visible {
+        outline: 3px solid rgba(21, 94, 239, 0.25);
+        outline-offset: 2px;
+      }
+
+      .booking-page {
+        width: 100%;
+        min-height: 100vh;
+        padding: 32px 20px;
+      }
+
+      .booking-container {
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+
+      .booking-hero {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 25px;
+        padding: 35px 40px;
+        border-radius: 24px;
+        color: var(--white);
+        background:
+          linear-gradient(
+            125deg,
+            rgba(7, 35, 94, 0.98),
+            rgba(21, 94, 239, 0.95)
+          );
+        box-shadow:
+          0 20px 50px rgba(21, 94, 239, 0.2);
+      }
+
+      .booking-hero::before {
+        position: absolute;
+        top: -140px;
+        right: 80px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        content: "";
+      }
+
+      .booking-hero::after {
+        position: absolute;
+        right: -50px;
+        bottom: -80px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        content: "";
+      }
+
+      .booking-hero-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+      }
+
+      .booking-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 13px;
+        padding: 7px 13px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .booking-hero h1 {
+        margin: 0 0 8px;
+        color: var(--white);
+        font-size: clamp(28px, 4vw, 43px);
+        font-weight: 700;
+        letter-spacing: -1px;
+      }
+
+      .booking-hero p {
+        max-width: 650px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .hero-calendar-icon {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 100px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow:
+          inset 0 0 25px rgba(255, 255, 255, 0.06);
+        font-size: 45px;
+        transform: rotate(5deg);
+      }
+
+      .booking-card {
+        border: 1px solid rgba(228, 231, 236, 0.9);
+        border-radius: 22px;
+        background: var(--white);
+        box-shadow:
+                0 8px 18px rgba(15,61,145,.25),
+                inset 0 1px 0 rgba(255,255,255,.15) !important;
+      }
+
+      .booking-sidebar {
+        padding: 23px;
+      }
+
+      .sidebar-title {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin-bottom: 20px;
+      }
+
+      .sidebar-icon {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 13px;
+        color: var(--primary);
+        background: var(--primary-light);
+        font-size: 20px;
+      }
+
+      .sidebar-title h2 {
+        margin: 0 0 2px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .sidebar-title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .room-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .room-option {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 12px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        color: var(--text);
+        background: var(--white);
+        text-align: left;
+        cursor: pointer;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .room-option:hover {
+        border-color: #b5c8f8;
+        background: #f8faff;
+        transform: translateY(-1px);
+      }
+
+      .room-option.active {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        box-shadow:
+          0 8px 20px rgba(21, 94, 239, 0.1);
+      }
+
+      .room-option-icon {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 39px;
+        height: 39px;
+        border-radius: 11px;
+        color: #475467;
+        background: #f2f4f7;
+        font-size: 17px;
+      }
+
+      .room-option.active .room-option-icon {
+        color: var(--white);
+        background: var(--primary);
+      }
+
+      .room-option:disabled {
+        border-color: #eaecf0;
+        color: #98a2b3;
+        background: #f8fafc;
+        cursor: not-allowed;
+        opacity: 0.72;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .room-option:disabled:hover {
+        border-color: #eaecf0;
+        background: #f8fafc;
+        transform: none;
+      }
+
+      .room-option:disabled .room-option-icon {
+        color: #98a2b3;
+        background: #eaecf0;
+      }
+
+      .room-option-details {
+        display: flex;
+        min-width: 0;
+        flex: 1;
+        flex-direction: column;
+      }
+
+      .room-option-details strong {
+        overflow: hidden;
+        font-size: 13px;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .room-option-details small {
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .room-check {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 23px;
+        height: 23px;
+        border-radius: 50%;
+        color: transparent;
+        font-size: 12px;
+      }
+
+      .room-option.active .room-check {
+        color: var(--white);
+        background: var(--primary);
+      }
+
+      .booking-sidebar hr {
+        margin: 24px 0;
+        border-color: var(--border);
+        opacity: 1;
+      }
+
+      .availability-legend h3 {
+        margin-bottom: 15px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 11px;
+        color: #475467;
+        font-size: 12px;
+      }
+
+      .legend-dot {
+        display: inline-block;
+        flex: 0 0 auto;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(16, 24, 40, 0.12);
+        border-radius: 4px;
+        box-shadow: 0 2px 6px rgba(16, 24, 40, 0.14);
+      }
+
+      .legend-dot.available {
+        background: var(--success);
+      }
+
+      .legend-dot.partial {
+        background: var(--warning);
+      }
+
+      .legend-dot.unavailable {
+        background: var(--danger);
+      }
+
+      .legend-dot.selected {
+        background: var(--primary);
+      }
+
+      .calendar-card {
+        min-height: 720px;
+        padding: 25px;
+      }
+
+      .calendar-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+
+      .calendar-label {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--primary);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.9px;
+        text-transform: uppercase;
+      }
+
+      .calendar-card-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .btn-today-custom {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        color: #344054;
+        background: var(--white);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          border-color 0.2s ease,
+          color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .btn-today-custom:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-light);
+      }
+
+      #room-availability-calendar {
+        width: 100%;
+      }
+
+      .fc {
+        font-family: inherit;
+      }
+
+      .fc .fc-toolbar {
+        margin-bottom: 20px;
+      }
+
+      .fc .fc-toolbar-title {
+        color: var(--text);
+        font-size: 19px;
+        font-weight: 700;
+      }
+
+      .fc .fc-button {
+        padding: 8px 13px;
+        border: 0;
+        border-radius: 10px;
+        color: #344054;
+        background: #f2f4f7;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: none;
+        text-transform: capitalize;
+      }
+
+      .fc .fc-button:hover,
+      .fc .fc-button:focus {
+        color: var(--white);
+        background: var(--primary);
+        box-shadow: none;
+      }
+
+      .fc .fc-button-primary:not(:disabled).fc-button-active {
+        color: var(--white);
+        background: var(--primary);
+      }
+
+      .fc-theme-standard td,
+      .fc-theme-standard th,
+      .fc-theme-standard .fc-scrollgrid {
+        border-color: #eaecf0;
+      }
+
+      .fc-theme-standard .fc-scrollgrid {
+        overflow: hidden;
+        border-radius: 15px;
+      }
+
+      .fc .fc-col-header-cell {
+        padding: 12px 5px;
+        background: #f8fafc;
+      }
+
+      .fc .fc-col-header-cell-cushion {
+        color: #667085;
+        font-size: 11px;
+        font-weight: 600;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .fc .fc-daygrid-day {
+        background: var(--white);
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .fc .fc-daygrid-day:hover {
+        background: #f8faff;
+      }
+
+      .fc .fc-daygrid-day-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 29px;
+        height: 29px;
+        margin: 7px;
+        border-radius: 9px;
+        color: #344054;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .fc .fc-day-today {
+        background: #f7f9ff !important;
+      }
+
+      .fc .fc-day-today .fc-daygrid-day-number {
+        color: var(--white);
+        background: var(--primary);
+      }
+
+      .fc .fc-day-other {
+        background: #fafafa;
+      }
+
+      .fc .fc-day-other .fc-daygrid-day-number {
+        color: #b1b7c2;
+      }
+
+      .fc .fc-day-past {
+        cursor: not-allowed;
+      }
+
+      .fc .fc-day-past .fc-daygrid-day-number {
+        color: #c2c7d0;
+      }
+
+      .fc-event {
+        margin: 2px 5px;
+        padding: 3px 6px;
+        border: 0;
+        border-radius: 7px;
+        font-size: 9px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .fc-event.event-booked {
+        margin: 4px 5px;
+        padding: 5px 7px;
+        border: 1px solid #087a45 !important;
+        border-radius: 8px;
+        color: #ffffff !important;
+        background: #12b76a !important;
+        font-size: 10px;
+        font-weight: 700;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(18, 183, 106, 0.28);
+        pointer-events: auto;
+        cursor: pointer;
+      }
+
+      .fc .fc-daygrid-day.booked-calendar-date {
+        background: #e8fff2 !important;
+        box-shadow: inset 0 0 0 2px #12b76a;
+        cursor: pointer;
+      }
+
+      .fc .fc-daygrid-day.fully-booked-calendar-date {
+        background: #fff0ef !important;
+        box-shadow: inset 0 0 0 2px var(--danger);
+      }
+
+      .selected-calendar-date {
+        background: #edf3ff !important;
+        box-shadow:
+          inset 0 0 0 2px var(--primary);
+      }
+
+      .modal-dialog.modal-md {
+        width: calc(100% - 32px);
+        max-width: 600px;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .booking-modal {
+        overflow: hidden;
+        border: 0;
+        border-radius: 22px;
+        box-shadow:
+          0 25px 80px rgba(16, 24, 40, 0.2);
+      }
+
+      .booking-modal .modal-header {
+        align-items: flex-start;
+        padding: 23px 25px 18px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .modal-eyebrow {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--primary);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+
+      .booking-modal .modal-title {
+        color: var(--text);
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .booking-modal .modal-body {
+        padding: 23px 25px;
+      }
+
+      .modal-room {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 17px;
+      }
+
+      .modal-room-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        border-radius: 12px;
+        color: var(--primary);
+        background: var(--primary-light);
+      }
+
+      .modal-room div {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-room small {
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .modal-room strong {
+        color: var(--text);
+        font-size: 14px;
+      }
+
+      .availability-message {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 22px;
+        padding: 15px;
+        border-radius: 14px;
+      }
+
+      .availability-message.available {
+        color: var(--success-dark);
+        background: var(--success-light);
+      }
+
+      .availability-message.partial {
+        color: var(--warning-dark);
+        background: var(--warning-light);
+      }
+
+      .availability-message.unavailable {
+        color: var(--danger-dark);
+        background: var(--danger-light);
+      }
+
+      .availability-status-icon {
+        flex: 0 0 auto;
+        font-size: 21px;
+      }
+
+      .availability-message strong {
+        display: block;
+        margin-bottom: 2px;
+        font-size: 13px;
+      }
+
+      .availability-message p {
+        margin: 0;
+        color: inherit;
+        font-size: 11px;
+        line-height: 1.6;
+        opacity: 0.85;
+      }
+
+      .time-slot-section h3 {
+        margin-bottom: 12px;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .time-slots {
+        display: grid;
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .time-slot {
+        min-width: 0;
+        padding: 10px 7px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: #475467;
+        background: var(--white);
+        font-size: 10px;
+        font-weight: 500;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          border-color 0.2s ease,
+          color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .time-slot:hover:not(.booked) {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-light);
+      }
+
+      .time-slot.selected {
+        border-color: var(--primary);
+        color: var(--white);
+        background: var(--primary);
+      }
+
+      .time-slot.booked {
+        color: #98a2b3;
+        background: #f2f4f7;
+        cursor: not-allowed;
+        text-decoration: line-through;
+      }
+
+      .booking-modal .modal-footer {
+        padding: 16px 25px 22px;
+        border-top: 1px solid var(--border);
+      }
+
+      .btn-continue-booking {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 17px;
+        border: 0;
+        border-radius: 10px;
+        color: var(--white);
+        background: var(--primary);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .btn-continue-booking:hover:not(:disabled) {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      .btn-continue-booking:disabled {
+        background: #98a2b3;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      #submit-booking-button {
+        display: none !important;
+      }
+
+      #submit-booking-button.is-ready {
+        display: inline-flex !important;
+      }
+
+      .booking-form-modal .modal-body {
+        padding: 24px 25px;
+      }
+
+      .booking-form-summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+        padding: 14px 16px;
+        border: 1px solid #c7d7fe;
+        border-radius: 14px;
+        background: #f4f7ff;
+      }
+
+      .booking-form-summary-icon {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        color: var(--primary);
+        background: var(--white);
+        font-size: 19px;
+      }
+
+      .booking-form-summary small {
+        display: block;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .booking-form-summary strong {
+        display: block;
+        color: var(--text);
+        font-size: 13px;
+      }
+
+      .booking-form-label {
+        font-family: "Poppins", sans-serif !important;
+        margin-bottom: 7px !important;
+        color: var(--text) !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+      }
+
+      .booking-form-control {
+        min-height: 46px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        background: var(--white);
+        font-size: 13px;
+        box-shadow: none;
+      }
+
+      textarea.booking-form-control {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      .booking-form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(21, 94, 239, 0.1);
+      }
+
+      .booking-form-control.is-invalid {
+        border-color: var(--danger);
+      }
+
+      .booking-form-help {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      @media (max-width: 1199.98px) {
+        .calendar-card {
+          min-height: 650px;
+        }
+      }
+
+      @media (max-width: 991.98px) {
+        .booking-page {
+          padding: 24px 16px;
+        }
+
+        .calendar-card {
+          min-height: auto;
+        }
+
+        .room-list {
+          display: grid;
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        }
+
+        .availability-legend {
+          display: grid;
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+          gap: 4px 15px;
+        }
+
+        .availability-legend h3 {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 767.98px) {
+        .booking-page {
+          padding: 16px 10px;
+        }
+
+        .booking-hero {
+          margin-bottom: 16px;
+          padding: 25px 20px;
+          border-radius: 18px;
+        }
+
+        .booking-hero-content {
+          align-items: flex-start;
+        }
+
+        .booking-eyebrow {
+          font-size: 11px;
+        }
+
+        .booking-hero h1 {
+          font-size: 27px;
+          line-height: 1.25;
+        }
+
+        .booking-hero p {
+          font-size: 13px;
+        }
+
+        .hero-calendar-icon {
+          display: none;
+        }
+
+        .booking-card {
+          border-radius: 18px;
+        }
+
+        .booking-sidebar,
+        .calendar-card {
+          padding: 17px;
+        }
+
+        .room-list {
+          display: flex;
+        }
+
+        .availability-legend {
+          display: block;
+        }
+
+        .calendar-card-header {
+          align-items: flex-start;
+        }
+
+        .calendar-card-header h2 {
+          font-size: 18px;
+        }
+
+        .fc .fc-toolbar.fc-header-toolbar {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .fc .fc-toolbar-chunk {
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .fc .fc-toolbar-title {
+          font-size: 17px;
+        }
+
+        .fc .fc-button {
+          padding: 7px 10px;
+          font-size: 11px;
+        }
+
+        .fc .fc-col-header-cell {
+          padding: 9px 2px;
+        }
+
+        .fc .fc-col-header-cell-cushion {
+          font-size: 9px;
+        }
+
+        .fc .fc-daygrid-day-number {
+          width: 25px;
+          height: 25px;
+          margin: 4px;
+          font-size: 10px;
+        }
+
+        .fc-event {
+          margin: 1px 2px;
+          padding: 2px 3px;
+          font-size: 7px;
+        }
+
+        .fc .fc-daygrid-day-frame {
+          min-height: 72px;
+        }
+      }
+
+      @media (max-width: 575.98px) {
+        .booking-page {
+          padding: 10px 6px;
+        }
+
+        .booking-hero {
+          padding: 22px 17px;
+        }
+
+        .booking-hero h1 {
+          font-size: 24px;
+        }
+
+        .booking-sidebar,
+        .calendar-card {
+          padding: 14px;
+        }
+
+        .calendar-card-header {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .btn-today-custom {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .fc .fc-toolbar-chunk:nth-child(2) {
+          order: -1;
+          justify-content: center;
+        }
+
+        .fc .fc-toolbar-title {
+          text-align: center;
+        }
+
+        .fc .fc-daygrid-day-frame {
+          min-height: 62px;
+        }
+
+        .fc .fc-daygrid-day-number {
+          width: 22px;
+          height: 22px;
+          margin: 3px;
+          font-size: 9px;
+        }
+
+        .fc-event {
+          overflow: hidden;
+          padding: 2px;
+          font-size: 0;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .fc-event::after {
+          display: block;
+          width: 6px;
+          height: 6px;
+          margin: 1px auto;
+          border-radius: 50%;
+          background: currentColor;
+          content: "";
+        }
+
+        .booking-modal .modal-header,
+        .booking-modal .modal-body,
+        .booking-modal .modal-footer {
+          padding-right: 18px;
+          padding-left: 18px;
+        }
+
+        .time-slots {
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        }
+
+        .booking-modal .modal-footer {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .booking-modal .modal-footer button {
+          width: 100%;
+          justify-content: center;
+          margin: 0;
+        }
+      }
+
+      .booking-page button,
+      .booking-modal button,
+      .swal2-container button {
+        font-family: "Poppins", sans-serif !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+        text-decoration: none !important;
+        box-shadow: none !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+      }
+
+      .booking-page .room-option {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 66px !important;
+        align-items: center !important;
+        gap: 12px !important;
+        margin: 0 !important;
+        padding: 13px !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 15px !important;
+        color: var(--text) !important;
+        background: var(--white) !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 1.4 !important;
+        text-align: left !important;
+        cursor: pointer !important;
+        opacity: 1 !important;
+      }
+
+      .booking-page .room-option:hover:not(:disabled) {
+        border-color: #9bb8ff !important;
+        background: #f3f7ff !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 8px 20px rgba(21, 94, 239, 0.10) !important;
+      }
+
+      .booking-page .room-option.active {
+        border-color: var(--primary) !important;
+        color: var(--text) !important;
+        background: var(--primary-light) !important;
+        box-shadow: 0 8px 20px rgba(21, 94, 239, 0.12) !important;
+      }
+
+      .booking-page .room-option:disabled {
+        border-color: #e4e7ec !important;
+        color: #98a2b3 !important;
+        background: #f8f9fb !important;
+        cursor: not-allowed !important;
+        opacity: 0.72 !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .booking-page .room-option:disabled:hover {
+        border-color: #e4e7ec !important;
+        background: #f8f9fb !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .booking-page .btn-today-custom {
+        display: inline-flex !important;
+        min-height: 42px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        margin: 0 !important;
+        padding: 10px 16px !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 11px !important;
+        color: #344054 !important;
+        background: #ffffff !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        cursor: pointer !important;
+      }
+
+      .booking-page .btn-today-custom:hover,
+      .booking-page .btn-today-custom:focus {
+        border-color: var(--primary) !important;
+        color: var(--primary) !important;
+        background: var(--primary-light) !important;
+        box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12) !important;
+      }
+
+      .booking-page .fc .fc-button,
+      .booking-page .fc .fc-button-primary {
+        min-width: 38px !important;
+        min-height: 38px !important;
+        margin: 0 !important;
+        padding: 8px 13px !important;
+        border: 1px solid #e4e7ec !important;
+        border-radius: 10px !important;
+        color: #344054 !important;
+        background: #f2f4f7 !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1 !important;
+        opacity: 1 !important;
+        cursor: pointer !important;
+      }
+
+      .booking-page .fc .fc-button:hover,
+      .booking-page .fc .fc-button:focus,
+      .booking-page .fc .fc-button-primary:hover,
+      .booking-page .fc .fc-button-primary:focus,
+      .booking-page .fc .fc-button-primary:not(:disabled).fc-button-active {
+        border-color: var(--primary) !important;
+        color: #ffffff !important;
+        background: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12) !important;
+      }
+
+      .booking-page .fc .fc-button:disabled,
+      .booking-page .fc .fc-button-primary:disabled {
+        border-color: #e4e7ec !important;
+        color: #98a2b3 !important;
+        background: #f2f4f7 !important;
+        cursor: not-allowed !important;
+        opacity: 0.65 !important;
+      }
+
+      .booking-modal .btn-continue-booking {
+        display: inline-flex !important;
+        min-height: 42px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        margin: 0 !important;
+        padding: 10px 18px !important;
+        border: 1px solid var(--primary) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        background: var(--primary) !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        cursor: pointer !important;
+      }
+
+      .booking-modal .btn-continue-booking:hover:not(:disabled),
+      .booking-modal .btn-continue-booking:focus:not(:disabled) {
+        border-color: var(--primary-dark) !important;
+        color: #ffffff !important;
+        background: var(--primary-dark) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 16px rgba(21, 94, 239, 0.22) !important;
+      }
+
+      .booking-modal .btn-continue-booking:disabled {
+        border-color: #98a2b3 !important;
+        color: #ffffff !important;
+        background: #98a2b3 !important;
+        cursor: not-allowed !important;
+        opacity: 1 !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .booking-modal .btn-booking-cancel,
+      .booking-modal .btn-light {
+        display: inline-flex !important;
+        min-height: 42px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 10px 18px !important;
+        border: 1px solid #d0d5dd !important;
+        border-radius: 10px !important;
+        color: #344054 !important;
+        background: #ffffff !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        cursor: pointer !important;
+      }
+
+      .booking-modal .btn-booking-cancel:hover,
+      .booking-modal .btn-booking-cancel:focus,
+      .booking-modal .btn-light:hover,
+      .booking-modal .btn-light:focus {
+        border-color: #98a2b3 !important;
+        color: #1d2939 !important;
+        background: #f2f4f7 !important;
+        box-shadow: 0 0 0 3px rgba(52, 64, 84, 0.10) !important;
+      }
+
+      .booking-modal .btn-close {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 1px solid #e4e7ec !important;
+        border-radius: 9px !important;
+        background-color: #ffffff !important;
+        background-size: 11px !important;
+        opacity: 1 !important;
+        cursor: pointer !important;
+      }
+
+      .booking-modal .btn-close:hover,
+      .booking-modal .btn-close:focus {
+        border-color: #98a2b3 !important;
+        background-color: #f2f4f7 !important;
+        opacity: 1 !important;
+        box-shadow: 0 0 0 3px rgba(52, 64, 84, 0.10) !important;
+      }
+
+      .swal2-container .swal2-actions {
+        gap: 10px !important;
+      }
+
+      .swal2-container .swal2-confirm {
+        min-height: 42px !important;
+        margin: 0 !important;
+        padding: 10px 22px !important;
+        border: 1px solid #155eef !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        background: #155eef !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        cursor: pointer !important;
+      }
+
+      .swal2-container .swal2-confirm:hover,
+      .swal2-container .swal2-confirm:focus {
+        border-color: #0b4ed1 !important;
+        color: #ffffff !important;
+        background: #0b4ed1 !important;
+        box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.18) !important;
+      }
+
+      .swal2-container .swal2-cancel,
+      .swal2-container .swal2-deny {
+        min-height: 42px !important;
+        margin: 0 !important;
+        padding: 10px 22px !important;
+        border: 1px solid #d0d5dd !important;
+        border-radius: 10px !important;
+        color: #344054 !important;
+        background: #ffffff !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        cursor: pointer !important;
+      }
+
+      .swal2-container .swal2-cancel:hover,
+      .swal2-container .swal2-cancel:focus,
+      .swal2-container .swal2-deny:hover,
+      .swal2-container .swal2-deny:focus {
+        border-color: #98a2b3 !important;
+        color: #1d2939 !important;
+        background: #f2f4f7 !important;
+        box-shadow: 0 0 0 3px rgba(52, 64, 84, 0.10) !important;
+      }
+
+      .swal2-container .swal2-close {
+        color: #667085 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+      @media (max-width: 575.98px) {
+        .booking-modal .btn-booking-cancel,
+        .booking-modal .btn-light,
+        .booking-modal .btn-continue-booking {
+          width: 100% !important;
+        }
+
+        .swal2-container .swal2-confirm,
+        .swal2-container .swal2-cancel,
+        .swal2-container .swal2-deny {
+          min-width: 120px !important;
+        }
+      }
+
+      .fc-daygrid-day-events {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .fc-daygrid-event {
+        margin-top: 1px !important;
+        margin-bottom: 1px !important;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .fc-daygrid-event .fc-event-title {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.25;
+        white-space: normal;
+      }
+
+      .event-morning-booked,
+      .event-afternoon-booked,
+      .event-whole-day-booked,
+      .event-unspecified-booked {
+        display: block;
+        width: 100%;
+      }
+
+      /* #visitors_container{
+        min-height: 300px;
+      } */
+
+
+
+
+      /* =========================================================
+         BOOKING DETAILS POPUP - LARGE / TWO COLUMNS
+         ========================================================= */
+
+      .wcpi-booking-details-popup {
+        width: min(1100px, calc(100vw - 32px)) !important;
+        max-width: 1100px !important;
+      }
+
+      .wcpi-booking-details-popup .swal2-html-container {
+        margin-right: 22px !important;
+        margin-left: 22px !important;
+        overflow: visible !important;
+      }
+
+      .wcpi-booking-details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        gap: 14px;
+        width: 100%;
+      }
+
+      .wcpi-booking-details-grid .booking-detail-card {
+        min-width: 0;
+        height: 100%;
+        margin-bottom: 0 !important;
+      }
+
+      .wcpi-booking-detail-data {
+        display: grid;
+        grid-template-columns: 115px minmax(0, 1fr);
+        gap: 7px 10px;
+        align-items: start;
+      }
+
+      .wcpi-booking-detail-data strong {
+        color: #344054;
+        font-size: 11px;
+      }
+
+      .wcpi-booking-detail-data span,
+      .wcpi-booking-detail-data div {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .wcpi-booking-details-footer {
+        grid-column: 1 / -1;
+      }
+
+      .wcpi-collateral-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .wcpi-collateral-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        border: 1px solid #e4e7ec;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .wcpi-collateral-name-wrap {
+        display: flex;
+        min-width: 0;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .wcpi-collateral-number {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        color: #155eef;
+        background: #eaf1ff;
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .wcpi-collateral-name {
+        display: block;
+        color: #172033;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.4;
+      }
+
+      .wcpi-collateral-category {
+        display: block;
+        margin-top: 2px;
+        color: #667085;
+        font-size: 9px;
+        font-weight: 500;
+      }
+
+      .wcpi-collateral-values {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        align-items: center;
+        gap: 10px;
+        color: #475467;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+
+      .wcpi-collateral-values strong {
+        color: #155eef;
+        font-size: 11px;
+      }
+
+      .wcpi-collateral-totals {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .wcpi-collateral-total-box {
+        padding: 9px 10px;
+        border: 1px solid #c7d7fe;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .wcpi-collateral-total-box span {
+        display: block;
+        color: #667085;
+        font-size: 9px;
+        font-weight: 600;
+      }
+
+      .wcpi-collateral-total-box strong {
+        display: block;
+        margin-top: 2px;
+        color: #155eef;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      @media (max-width: 850px) {
+        .wcpi-booking-details-popup {
+          width: min(700px, calc(100vw - 24px)) !important;
+        }
+
+        .wcpi-booking-details-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 575.98px) {
+        .wcpi-booking-details-popup {
+          width: calc(100vw - 16px) !important;
+        }
+
+        .wcpi-booking-details-popup .swal2-html-container {
+          margin-right: 12px !important;
+          margin-left: 12px !important;
+        }
+
+        .wcpi-booking-detail-data {
+          grid-template-columns: 1fr;
+          gap: 3px;
+        }
+
+        .wcpi-booking-detail-data strong:not(:first-child) {
+          margin-top: 7px;
+        }
+
+        .wcpi-collateral-item {
+          grid-template-columns: 1fr;
+        }
+
+        .wcpi-collateral-values {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          padding-left: 30px;
+          white-space: normal;
+        }
+      }
+
+      /* =========================================================
+         BOOKING TIME RANGE UI
+         ========================================================= */
+      #booking-time-container {
+        min-width: 0;
+      }
+
+      .booking-time-range {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: end;
+        gap: 8px;
+      }
+
+      .booking-time-field {
+        min-width: 0;
+      }
+
+      .booking-time-sub-label {
+        display: block !important;
+        margin-bottom: 5px !important;
+        color: var(--muted) !important;
+        font-size: 10px !important;
+        font-weight: 600 !important;
+      }
+
+      .booking-time-separator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding-bottom: 1px;
+        color: #98a2b3;
+        font-size: 15px;
+      }
+
+      #booking-time-from,
+      #booking-time-to {
+        width: 100%;
+      }
+
+      @media (max-width: 575.98px) {
+        .booking-time-range {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .booking-time-separator {
+          display: none;
+        }
+
+        #booking-time-container {
+          margin-top: 12px;
+        }
+      }
+
+      /* =========================================================
+         DYNAMIC VISITOR FIELDS
+         ========================================================= */
+      #visitors_container {
+        width: 100%;
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+      }
+
+      #visitors_container::-webkit-scrollbar {
+        width: 7px;
+      }
+
+      #visitors_container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      #visitors_container::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background: #cbd5e1;
+      }
+
+      #visitors_container::-webkit-scrollbar-thumb:hover {
+        background: #98a2b3;
+      }
+
+      .visitor-field-row {
+        margin-bottom: 10px;
+      }
+
+      .visitor-field-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .visitor-input-wrap {
+        display: flex;
+        width: 100%;
+        align-items: stretch;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--white);
+        overflow: hidden;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .visitor-input-wrap:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(21, 94, 239, 0.1);
+      }
+
+      .visitor-number {
+        display: flex;
+        flex: 0 0 42px;
+        align-items: center;
+        justify-content: center;
+        color: #475467;
+        background: #f8fafc;
+        font-size: 12px;
+        font-weight: 700;
+        border-right: 1px solid var(--border);
+      }
+
+      .visitor-name-input {
+        min-width: 0;
+        min-height: 46px;
+        flex: 1;
+        padding: 10px 12px;
+        border: 0 !important;
+        border-radius: 0 !important;
+        outline: 0 !important;
+        color: var(--text);
+        background: transparent !important;
+        font-size: 13px;
+        box-shadow: none !important;
+      }
+
+      .visitor-remove-btn {
+        display: flex;
+        flex: 0 0 44px;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-left: 1px solid var(--border);
+        color: var(--danger);
+        background: #fff7f6;
+        cursor: pointer;
+        transition:
+          color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .visitor-remove-btn:hover,
+      .visitor-remove-btn:focus {
+        color: #ffffff;
+        background: var(--danger);
+        outline: 0;
+      }
+
+      .visitor-empty-message, .request-empty-message {
+        min-height: 46px;
+        display: flex;
+        align-items: center;
+        padding: 0 13px;
+        border: 1px dashed #d0d5dd;
+        border-radius: 12px;
+        color: var(--muted);
+        background: #f8fafc;
+        font-size: 11px;
+      }
+
+            /* =========================================================
+         BACK BUTTON
+         ========================================================= */
+      .booking-page .back-link {
+        display: block;
+        width: 100%;
+        margin-top: 18px;
+        text-decoration: none !important;
+      }
+
+      .booking-page .back-btn {
+        display: inline-flex !important;
+        width: 100% !important;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 11px 16px !important;
+        border: 1px solid #c7d7fe !important;
+        border-radius: 12px !important;
+        color: var(--primary) !important;
+        background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%) !important;
+        font-family: "Poppins", sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        cursor: pointer !important;
+        box-shadow: 0 5px 14px rgba(21, 94, 239, 0.08) !important;
+        transition:
+          color 0.2s ease,
+          background 0.2s ease,
+          border-color 0.2s ease,
+          transform 0.2s ease,
+          box-shadow 0.2s ease !important;
+      }
+
+      .booking-page .back-btn i {
+        font-size: 14px;
+        transition: transform 0.2s ease;
+      }
+
+      .booking-page .back-btn:hover,
+      .booking-page .back-btn:focus-visible {
+        border-color: var(--primary) !important;
+        color: #ffffff !important;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(21, 94, 239, 0.22) !important;
+      }
+
+      .booking-page .back-btn:hover i {
+        transform: translateX(-3px);
+      }
+
+      .booking-page .back-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(21, 94, 239, 0.16) !important;
+      }
+
+
+      
+      /* Sticky portal navigation */
+      .site-sticky-header {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100%;
+        max-width: none;
+        margin: 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        background: linear-gradient(
+          135deg,
+          #071f4f 0%,
+          #0d47a1 48%,
+          #2563eb 100%
+        );
+        box-shadow: 0 12px 34px rgba(7, 31, 79, 0.28);
+      }
+
+      body.admin-bar .site-sticky-header {
+        top: 32px;
+      }
+
+      .site-navbar {
+        width: 100%;
+        max-width: 1500px;
+        min-height: 72px;
+        margin: 0 auto;
+        padding: 10px 20px;
+      }
+
+      .site-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        color: #ffffff !important;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+      }
+
+      .site-brand:hover,
+      .site-brand:focus {
+        color: #ffffff !important;
+      }
+
+      .site-brand-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 39px;
+        height: 39px;
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        border-radius: 12px;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.14);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+      }
+
+      .portal-nav-list {
+        align-items: center;
+        gap: 6px;
+      }
+
+      .portal-nav-list .nav-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 9px 14px !important;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.92) !important;
+        font-size: 13px;
+        font-weight: 600;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .portal-nav-list .nav-link:hover,
+      .portal-nav-list .nav-link:focus {
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+        transform: translateY(-1px);
+      }
+
+      .portal-nav-list .nav-link.active,
+      .portal-nav-list .nav-item.show > .nav-link,
+      .portal-nav-list .dropdown-toggle.show {
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.20) !important;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+      }
+
+      .site-navbar .navbar-toggler {
+        border: 1px solid rgba(255, 255, 255, 0.42) !important;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: none !important;
+      }
+
+      .site-navbar .navbar-toggler-icon {
+        filter: brightness(0) invert(1);
+      }
+
+      .portal-nav-list .dropdown-menu {
+        min-width: 210px;
+        margin-top: 10px;
+        padding: 8px;
+        border: 1px solid rgba(30, 64, 175, 0.14);
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 20px 46px rgba(7, 31, 79, 0.24);
+      }
+
+      .portal-nav-list .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        color: #16325c;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .portal-nav-list .dropdown-item:hover,
+      .portal-nav-list .dropdown-item:focus {
+        color: #1d4ed8;
+        background: #eaf2ff;
+      }
+
+      .portal-nav-list .dropdown-item.active,
+      .portal-nav-list .dropdown-item[aria-current="page"] {
+        color: #ffffff !important;
+        background: linear-gradient(135deg, #0d47a1, #2563eb) !important;
+        font-weight: 700;
+      }
+
+      /* Remove extra top spacing around the showroom content */
+      .booking-page {
+        margin-top: 0 !important;
+        padding-top: 28px;
+      }
+
+      @media (max-width: 991.98px) {
+        .site-navbar {
+          padding: 10px 18px;
+        }
+
+        #portalMainNav {
+          margin-top: 10px;
+          padding: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: 14px;
+          background: rgba(4, 25, 67, 0.34);
+        }
+
+        .portal-nav-list {
+          align-items: stretch;
+          gap: 4px;
+          padding: 4px 0;
+        }
+
+        .portal-nav-list .nav-link {
+          width: 100%;
+        }
+
+        .portal-nav-list .dropdown-menu {
+          margin: 5px 0 0 !important;
+          border: 1px solid rgba(255, 255, 255, 0.18) !important;
+          background: rgba(255, 255, 255, 0.98) !important;
+          box-shadow: none;
+        }
+      }
+
+      @media screen and (max-width: 782px) {
+        body.admin-bar .site-sticky-header {
+          top: 46px;
+        }
+      }
+
+
+      /* Final no-gap overrides for WordPress */
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .site-sticky-header {
+        margin-block-start: 0 !important;
+        margin-block-end: 0 !important;
+      }
+
+      .booking-page {
+        margin: 0 !important;
+        padding-top: 100px !important;
+      }
+
+      .entry-content,
+      .wp-block-post-content,
+      .wp-block-html,
+      .elementor-widget-html,
+      .elementor-widget-html .elementor-widget-container,
+      .site-main,
+      main.site-main {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+
+      @media screen and (max-width: 782px) {
+        body.admin-bar .site-sticky-header {
+          top: 46px;
+        }
+      }
+
+      /* Front-end only: What do you need? request selector. */
+      .request-category-column,
+      .request-options-column {
+        min-width: 0;
+      }
+
+      .request-category-help {
+        margin-top: 7px;
+      }
+
+      .request-top-summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .request-summary-box {
+        min-height: 74px;
+        padding: 12px 15px;
+        border: 1px solid #dbe4f3;
+        border-radius: 14px;
+        background: #f8faff;
+      }
+
+      .request-summary-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #667085;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .request-summary-value {
+        display: block;
+        color: #155eef;
+        font-size: 19px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      #request_container {
+        width: 100%;
+        height: auto;
+        max-height: none;
+        min-width: 0;
+        overflow: visible;
+        padding-right: 0;
+      }
+
+      .request-options-card {
+        overflow: hidden;
+        border: 1px solid #e4e7ec;
+        border-radius: 14px;
+        background: #ffffff;
+      }
+
+      .request-options-scroll {
+        height: auto;
+        max-height: none;
+        overflow: visible;
+      }
+
+      .request-group + .request-group {
+        border-top: 1px solid #e4e7ec;
+      }
+
+      .request-group-options {
+        display: grid;
+        grid-template-rows: repeat(5, auto);
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(190px, 1fr);
+      }
+
+      .request-group-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 11px 13px;
+        border-bottom: 1px solid #e4e7ec;
+        background: #f8faff;
+      }
+
+      .request-group-title {
+        color: #172033;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.4;
+      }
+
+      .request-group-badge {
+        flex: 0 0 auto;
+        padding: 4px 8px;
+        border-radius: 999px;
+        color: #155eef;
+        background: #eaf1ff;
+        font-size: 9px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .request-group-badge.is-lead-time {
+        color: #b54708;
+        background: #fff3df;
+      }
+
+      .request-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 0;
+        padding: 10px 13px;
+        border-bottom: 1px solid #f0f2f5;
+        border-right: 1px solid #f0f2f5;
+        cursor: pointer;
+        transition: background-color 0.18s ease;
+      }
+
+      .request-option:last-child {
+        border-bottom: 0;
+      }
+
+      .request-option:hover,
+      .request-option.is-selected {
+        background: #f4f7ff;
+      }
+
+      .request-option-main {
+        display: flex;
+        flex: 1 1 auto;
+        min-width: 0;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .request-option-checkbox {
+        flex: 0 0 auto;
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: #155eef;
+        cursor: pointer;
+      }
+
+      .request-option-name {
+        color: #344054;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+
+      .request-option-price {
+        flex: 0 0 auto;
+        color: #155eef;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .request-option-controls {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .request-option-quantity {
+        width: 44px;
+        height: 31px;
+        margin: 0;
+        padding: 4px 5px;
+        border: 1px solid #d0d5dd;
+        border-radius: 6px;
+        color: #172033 !important;
+        background: #ffffff !important;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1;
+        text-align: center;
+        box-shadow: none;
+      }
+
+      /*
+       * WordPress themes and form plugins often force number inputs to
+       * width: 100%. Keep this override scoped only to collateral quantity
+       * fields so No. of Pax and all other form fields are not affected.
+       */
+      .booking-form-modal #request_container input.request-option-quantity {
+        flex: 0 0 46px !important;
+        width: 46px !important;
+        min-width: 46px !important;
+        max-width: 46px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        padding: 3px 4px !important;
+        margin: 0 !important;
+        font-size: 11px !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+      }
+
+      .request-option-quantity:focus {
+        border-color: #155eef;
+        outline: 0;
+        box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12);
+      }
+
+      .request-option-quantity:disabled {
+        color: #667085 !important;
+        background: #f2f4f7 !important;
+        cursor: not-allowed;
+        opacity: 1;
+      }
+
+      /* Keep quantity white/black even when its item is selected. */
+      .request-option.is-selected .request-option-quantity {
+        color: #172033 !important;
+        background: #ffffff !important;
+      }
+
+      .request-availability-note {
+        padding: 9px 13px 11px;
+        color: #b54708;
+        background: #fffaf0;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 575.98px) {
+        .request-top-summary {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .request-summary-box {
+          min-height: 0;
+        }
+
+        .request-group-options {
+          grid-template-rows: none;
+          grid-auto-flow: row;
+          grid-auto-columns: auto;
+          grid-template-columns: 1fr;
+        }
+
+        .request-options-scroll {
+          height: auto;
+          max-height: none;
+          overflow: visible;
+        }
+
+        .request-group-header {
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+
+        .request-option {
+          gap: 8px;
+          padding: 10px;
+        }
+
+        .request-option-name,
+        .request-option-price {
+          font-size: 10px;
+        }
+
+        .request-option-quantity {
+          width: 42px;
+        }
+
+        .booking-form-modal #request_container input.request-option-quantity {
+          flex-basis: 42px !important;
+          width: 42px !important;
+          min-width: 42px !important;
+          max-width: 42px !important;
+        }
+      }
+
+</style>
+  </head>
+
+  <body>
+
+    <header class="site-sticky-header">
+      <nav class="navbar navbar-expand-lg site-navbar" aria-label="Portal navigation">
+        <a class="navbar-brand site-brand" href="https://www.worldwidehomedepot.ph/online-request-form/">
+          <span class="site-brand-mark"><i class="bi bi-building"></i></span>
+          <span>Home</span>
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#portalMainNav"
+          aria-controls="portalMainNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="portalMainNav">
+          <ul class="navbar-nav ms-auto portal-nav-list">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="https://www.worldwidehomedepot.ph/showroom-booking-system/"
+              >
+                <i class="bi bi-calendar-check"></i>
+                Showroom Booking
+              </a>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="mrsNavDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-file-earmark-text"></i>
+                MRS Form
+              </a>
+
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mrsNavDropdown">
+                <li>
+                  <a class="dropdown-item" href="https://www.worldwidehomedepot.ph/mrs-manual/">
+                    <i class="bi bi-plus-circle"></i>
+                    Create MRS
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="https://www.worldwidehomedepot.ph/mrs-list/">
+                    <i class="bi bi-table"></i>
+                    MRS Records
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <main class="booking-page">
+      <div class="booking-container">
+        <section class="booking-hero">
+          <div class="booking-hero-content">
+            <div>
+              <span class="booking-eyebrow">
+                <i class="bi bi-calendar-check"></i>
+                Room Reservation
+              </span>
+              <h1>Check Room Availability</h1>
+              <p>Select a room and browse the calendar to view available and booked dates.</p>
+            </div>
+            <div class="hero-calendar-icon" aria-hidden="true">
+              <i class="bi bi-calendar3"></i>
+            </div>
+          </div>
+        </section>
+        <div class="row g-4">
+          <aside class="col-xl-3 col-lg-4">
+            <div class="booking-card booking-sidebar">
+              <div class="sidebar-title">
+                <span class="sidebar-icon">
+                  <i class="bi bi-door-open"></i>
+                </span>
+                <div>
+                  <h2>Select a Room</h2>
+                  <p>Choose the room you want to check.</p>
+                </div>
+              </div>
+              <div class="room-list">
+                <button type="button" class="room-option active" data-room-id="pagsabungan-showroom" data-room-name="Pagsabungan Showroom">
+                  <span class="room-option-icon">
+                    <i class="bi bi-people"></i>
+                  </span>
+                  <span class="room-option-details">
+                    <strong>Pagsabungan Showroom</strong>
+                  </span>
+                  <span class="room-check">
+                    <i class="bi bi-check-lg"></i>
+                  </span>
+                </button>
+                <button type="button" class="room-option" data-room-id="meeting-room-a" disabled aria-disabled="true" data-room-name="Meeting Room A">
+                  <span class="room-option-icon">
+                    <i class="bi bi-easel"></i>
+                  </span>
+                  <span class="room-option-details">
+                    <strong>Meeting Room A</strong>
+                    <small>Coming soon</small>
+                  </span>
+                  <span class="room-check">
+                    <i class="bi bi-check-lg"></i>
+                  </span>
+                </button>
+                <button type="button" class="room-option" data-room-id="meeting-room-b" disabled aria-disabled="true" data-room-name="Meeting Room B">
+                  <span class="room-option-icon">
+                    <i class="bi bi-laptop"></i>
+                  </span>
+                  <span class="room-option-details">
+                    <strong>Meeting Room B</strong>
+                    <small>Coming soon</small>
+                  </span>
+                  <span class="room-check">
+                    <i class="bi bi-check-lg"></i>
+                  </span>
+                </button>
+                <button type="button" class="room-option" data-room-id="training-room" disabled aria-disabled="true" data-room-name="Training Room">
+                  <span class="room-option-icon">
+                    <i class="bi bi-person-video3"></i>
+                  </span>
+                  <span class="room-option-details">
+                    <strong>Training Room</strong>
+                    <small>Coming soon</small>
+                  </span>
+                  <span class="room-check">
+                    <i class="bi bi-check-lg"></i>
+                  </span>
+                </button>
+              </div>
+              <hr>
+              <div class="availability-legend">
+                <h3>Availability Guide</h3>
+                <div class="legend-item">
+                  <span class="legend-dot" style="background:#ffffff;border:2px solid #98a2b3;"></span>
+                  <span>Available Date</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot booked" style="background:#12b76a;border:2px solid #087a45;"></span>
+                  <span>Partially</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot booked" style="background:#ee4629;border:2px solid #aa3723;"></span>
+                  <span>Fully Booked</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot selected"></span>
+                  <span>Selected Date</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="col-xl-9 col-lg-8">
+            <div class="booking-card calendar-card">
+              <div class="calendar-card-header">
+                <div>
+                  <span class="calendar-label">Availability Calendar</span>
+                  <h2 id="calendar-room-title">Pagsabungan Showroom</h2>
+                </div>
+                <button type="button" class="btn-today-custom" id="calendar-today-button">
+                  <i class="bi bi-calendar-event"></i>Today
+                </button>
+              </div>
+              <div id="room-availability-calendar"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+    <div class="modal fade" id="dateDetailsModal" tabindex="-1" aria-labelledby="modal-selected-date" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content booking-modal">
+          <div class="modal-header">
+            <div>
+              <span class="modal-eyebrow">Selected Schedule</span>
+              <h2 class="modal-title" id="modal-selected-date" >Date Availability</h2>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="modal-room">
+              <span class="modal-room-icon">
+                <i class="bi bi-door-open"></i>
+              </span>
+              <div>
+                <small>Room</small>
+                <strong id="modal-room-name">Pagsabungan Showroom</strong>
+              </div>
+            </div>
+            <div class="availability-message available" id="modal-availability-message">
+              <span class="availability-status-icon">
+                <i class="bi bi-check-circle"></i>
+              </span>
+              <div>
+                <strong>This date is available</strong>
+                <p>Continue to enter your booking details.</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn-continue-booking" id="continue-booking-button">Book This Date <i class="bi bi-calendar-check"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="bookingFormModal" tabindex="-1" aria-labelledby="booking-form-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content booking-modal booking-form-modal">
+          <div class="modal-header">
+            <div>
+              <span class="modal-eyebrow">Booking Information</span>
+              <h2 class="modal-title" id="booking-form-title">Complete Your Booking</h2>
+            </div>
+          </div>
+
+          <form id="showroom-booking-form" novalidate>
+            <div class="modal-body">
+              <div class="booking-form-summary">
+                <span class="booking-form-summary-icon">
+                  <i class="bi bi-calendar-check"></i>
+                </span>
+
+                <div>
+                  <small>Selected booking</small>
+                  <strong id="booking-form-room">Pagsabungan Showroom</strong>
+                  <strong id="booking-form-date">Selected date</strong>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <label for="booking-name" class="booking-form-label">Department:</label>
+                    <input type="text" class="form-control booking-form-control" id="department" name="department" data-forminator-field="text-5" placeholder="Enter your department" autocomplete="name" maxlength="100" required>
+                  </div>
+                  <div class="col-sm-6">
+                      <label for="booking-name" class="booking-form-label">Booked By:</label>
+                      <input type="text" class="form-control booking-form-control" id="booking-name" name="booking_name" data-forminator-field="text-1" placeholder="Enter your full name" autocomplete="name" maxlength="100" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="row g-3 align-items-start">
+                  <div class="col-sm-6">
+                    <div>
+                      <label for="booking-period" class="booking-form-label">Booking Period</label>
+                      <select class="form-select booking-form-control" id="booking-period" name="booking_period" data-forminator-field="text-4" required>
+                        <option value="">Select</option>
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
+                        <option value="Whole Day">Whole Day</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-sm-6" id="booking-time-container" style="display: none;">
+                    <label class="booking-form-label">Booking Time</label>
+
+                    <div class="booking-time-range">
+                      <div class="booking-time-field">
+                        <label for="booking-time-from" class="booking-time-sub-label">From</label>
+                        <select
+                          class="form-select booking-form-control"
+                          id="booking-time-from"
+                          name="booking_time_from"
+                          data-forminator-field="text-6"
+                        >
+                          <option value="">Select from</option>
+                        </select>
+                      </div>
+
+                      <div class="booking-time-separator" aria-hidden="true">
+                        <i class="bi bi-arrow-right"></i>
+                      </div>
+
+                      <div class="booking-time-field">
+                        <label for="booking-time-to" class="booking-time-sub-label">To</label>
+                        <select
+                          class="form-select booking-form-control"
+                          id="booking-time-to"
+                          name="booking_time_to"
+                          data-forminator-field="text-7"
+                        >
+                          <option value="">Select to</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="booking-form-help" id="booking-time-help"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="row g-3">
+                  <div class="col-sm-3">
+                    <label for="number-of-pax" class="booking-form-label">No. of Pax</label>
+                    <input
+                      type="number"
+                      class="form-control booking-form-control"
+                      id="number-of-pax"
+                      name="number_of_pax"
+                      data-forminator-field="text-8"
+                      min="0"
+                      max="20"
+                      step="1"
+                      inputmode="numeric"
+                      placeholder="0"
+                    >
+                    <div class="booking-form-help">Enter the number of visitors.</div>
+                  </div>
+                  <div class="col-sm-9">
+                    <label class="booking-form-label">Visitor's Name</label>
+                    <div id="visitors_container">
+                      <div class="visitor-empty-message">
+                        Enter the No. of Pax to generate visitor name fields.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="row g-3 align-items-start">
+                  <div class="col-sm-4 col-lg-5 request-category-column">
+                    <label for="booking-needs-category" class="booking-form-label">What do you need?</label>
+                    <select class="form-select booking-form-control" id="booking-needs-category" name="booking_needs_category" aria-controls="request_container">
+                      <option value="">Select</option>
+                      <option value="brochures">Brochures</option>
+                      <option value="giveaways">Giveaways</option>
+                      <option value="swatches">Swatches</option>
+                    </select>
+                    <div class="booking-form-help request-category-help">
+                      Choose a category to show its available items.
+                    </div>
+                  </div>
+                  <div class="col-sm-8 col-lg-7">
+                    <div class="request-top-summary" aria-live="polite">
+                      <div class="request-summary-box">
+                        <span class="request-summary-label">Total Amount</span>
+                        <strong class="request-summary-value" id="request-grand-total">₱0.00</strong>
+                      </div>
+                      <div class="request-summary-box">
+                        <span class="request-summary-label">Total Selected Items</span>
+                        <strong class="request-summary-value" id="request-panel-selected-count">0</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="row g-3 align-items-start">
+                  <div class="col-12 request-options-column">
+                    <div id="request_container" aria-live="polite">
+                      <div class="request-empty-message">
+                        Select your needs first to show the fields.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div>
+                      <label for="booking-purpose" class="booking-form-label">Purpose of Booking</label>
+                      <textarea class="form-control booking-form-control" id="booking-purpose" name="booking_purpose" data-forminator-field="textarea-1" placeholder="Briefly describe the purpose of your showroom visit" maxlength="500" required></textarea>
+                      <div class="booking-form-help">Maximum of 500 characters.</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                     <div>
+                      <label for="booking-purpose" class="booking-form-label">Remarks / Additional Notes</label>
+                      <textarea class="form-control booking-form-control" id="booking-remarks" name="booking_remarks" data-forminator-field="textarea-2" placeholder="Add here if you have special request" maxlength="500"></textarea>
+                      <div class="booking-form-help">Maximum of 500 characters.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-booking-cancel" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn-continue-booking" id="submit-booking-button">
+                Confirm Booking
+                <i class="bi bi-check-circle"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      jQuery(function ($) {
+        "use strict";
+
+        const calendarElement = document.getElementById(
+          "room-availability-calendar"
+        );
+
+        const modalElement = document.getElementById(
+          "dateDetailsModal"
+        );
+
+        const bookingFormModalElement = document.getElementById(
+          "bookingFormModal"
+        );
+
+        if (!calendarElement || !modalElement || !bookingFormModalElement) {
+          return;
+        }
+
+        const dateModal = new bootstrap.Modal(modalElement);
+        const bookingFormModal = new bootstrap.Modal(bookingFormModalElement);
+
+        let selectedRoom = {
+          id: "pagsabungan-showroom",
+          name: "Pagsabungan Showroom"
+        };
+
+        let selectedDate = "";
+        let selectedPeriod = "";
+
+        const bookingRecords = new Map();
+        const bookedDateRecords = new Map();
+
+        const forminatorConfig = {
+          formId: "33056",
+
+          // =========================================================
+          // FORMINATOR FIELD MAPPING
+          // =========================================================
+          bookedByField: "text-1",
+          dateField: "text-2",
+          periodField: "text-4",
+          departmentField: "text-5",
+          timeFromField: "text-6",
+          timeToField: "text-7",
+          paxField: "text-8",
+          purposeField: "textarea-1",
+          remarksField: "textarea-2",
+          requestNeedsField: "textarea-3",
+
+          // Visitor 1 = text-9 ... Visitor 20 = text-28
+          visitorFields: [
+            "text-9",
+            "text-10",
+            "text-11",
+            "text-12",
+            "text-13",
+            "text-14",
+            "text-15",
+            "text-16",
+            "text-17",
+            "text-18",
+            "text-19",
+            "text-20",
+            "text-21",
+            "text-22",
+            "text-23",
+            "text-24",
+            "text-25",
+            "text-26",
+            "text-27",
+            "text-28"
+          ]
+        };
+
+
+        /* =========================================================
+           FRONT-END ONLY: WHAT DO YOU NEED? CATEGORY TOGGLE
+
+           Edit the names, prices, badges, or lead times below to
+           update the visible choices. This intentionally does not
+           change Forminator fields, backend data, or submission.
+           ========================================================= */
+
+        const requestNeedsCatalog = {
+          brochures: {
+            label: "Brochures",
+            groups: [
+              {
+                title: "Brochures (on stock)",
+                badge: "On stock",
+                items: [
+                  { id: "brochure-elements", name: "Elements", price: 17 },
+                  { id: "brochure-craftswood", name: "Craftswood", price: 23 },
+                  { id: "brochure-idealock", name: "Idealock", price: 23 },
+                  { id: "brochure-marco-polo-sanitary", name: "Marco Polo Sanitary Wares", price: 19 }
+                ]
+              },
+              {
+                title: "Brochures (to be printed)",
+                badge: "1-day lead time",
+                leadTime: true,
+                items: [
+                  { id: "brochure-faucets-showers", name: "Faucets & Showers", price: 11 },
+                  { id: "brochure-bathroom-plumbing", name: "Bathroom & Plumbing Accessories", price: 11 },
+                  { id: "brochure-kitchen-sinks-marble", name: "Kitchen Sinks & Marble Slabs", price: 10 },
+                  { id: "brochure-trims-nosing", name: "Trims & Nosing", price: 10 },
+                  { id: "brochure-ceramic-tiles", name: "Ceramic Tile Collections", price: 15 },
+                  { id: "brochure-porcelain-matte", name: "Porcelain Tile Collections (Matte)", price: 15 },
+                  { id: "brochure-porcelain-glossy", name: "Porcelain Tile Collections (Glossy)", price: 15 },
+                  { id: "brochure-bamboo-charcoal", name: "Bamboo Charcoal", price: 15 },
+                  { id: "brochure-fluted-panel", name: "Fluted Panel Brochure", price: 20 },
+                  { id: "brochure-marco-polo-packages", name: "Marco Polo Packages", price: 25 },
+                  { id: "brochure-melamine-boards", name: "Melamine Boards", price: 10 },
+                  { id: "brochure-hpl", name: "HPL", price: 10 }
+                ]
+              }
+            ]
+          },
+
+          giveaways: {
+            label: "Giveaways",
+            groups: [
+              {
+                title: "Give-aways (on stock)",
+                badge: "On stock",
+                items: [
+                  { id: "giveaway-corporate-umbrella", name: "Corporate Umbrella", price: 90 },
+                  { id: "giveaway-vacuum-flask", name: "Vacuum Flask", price: 120 },
+                  { id: "giveaway-bamboo-ballpen", name: "Bamboo Ballpen", price: 8 },
+                  { id: "giveaway-corporate-notebook", name: "Corporate Notebook", price: 58 },
+                  { id: "giveaway-paper-bag", name: "Paper Bag", price: 10 },
+                  { id: "giveaway-burlap-bag", name: "Burlap Bag", price: 81 }
+                ]
+              }
+            ]
+          },
+
+          swatches: {
+            label: "Sample Swatches",
+            note: "3-day lead time, subject to availability of stocks.",
+            groups: [
+              {
+                title: "Sample Swatches",
+                badge: "3-day lead time",
+                leadTime: true,
+                items: [
+                  { id: "swatch-uv-board", name: "UV Board Swatches" },
+                  { id: "swatch-bamboo-charcoal", name: "Bamboo Charcoal Swatches" },
+                  { id: "swatch-melamine-marine", name: "Melamine Board Swatches (Marine)" },
+                  { id: "swatch-melamine-particle", name: "Melamine Board Swatches (Particle)" },
+                  { id: "swatch-fluted-panel", name: "Fluted Panel Swatches" },
+                  { id: "swatch-pvc-ceiling", name: "PVC Ceiling Panel Swatches" },
+                  { id: "swatch-trims-nosing", name: "Trims & Nosing" },
+                  { id: "swatch-mouldings-cornices", name: "Mouldings & Cornices" },
+                  { id: "swatch-hpl", name: "HPL Swatches" },
+                  { id: "swatch-spc-vinyl", name: "SPC Vinyl" }
+                ]
+              }
+            ]
+          }
+        };
+
+        // Preserve checked items while the user switches categories.
+        // This remains browser-only until backend fields are added later.
+        const selectedRequestNeeds = new Map();
+
+        function formatRequestPrice(price) {
+          return "₱" + Number(price).toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+        }
+
+        function getSelectedRequestNeedsValue() {
+          const allSelections = Array.from(selectedRequestNeeds.values());
+
+          if (!allSelections.length) {
+            return "";
+          }
+
+          const pricedItems = allSelections.filter(function (item) {
+            return typeof item.price === "number";
+          });
+
+          const grandTotal = pricedItems.reduce(function (sum, item) {
+            return sum + (item.price * item.quantity);
+          }, 0);
+
+          const totalQuantity = allSelections.reduce(function (sum, item) {
+            return sum + item.quantity;
+          }, 0);
+
+          const selectedLines = allSelections.map(function (item, index) {
+            const category = requestNeedsCatalog[item.category];
+            const categoryName = category ? category.label : item.category;
+            const priceText = typeof item.price === "number"
+              ? " - " + formatRequestPrice(item.price) + " each" +
+                " - Subtotal: " + formatRequestPrice(item.price * item.quantity)
+              : "";
+
+            return (index + 1) + ". " + item.name +
+              " (" + categoryName + ")" +
+              " - Qty: " + item.quantity + priceText;
+          });
+
+          selectedLines.push("");
+          selectedLines.push("Total Selected Items: " + totalQuantity);
+          selectedLines.push("Total Amount: " + formatRequestPrice(grandTotal));
+
+          return selectedLines.join("\n");
+        }
+
+        function syncRequestNeedsToForminator() {
+          return setForminatorField(
+            forminatorConfig.requestNeedsField,
+            getSelectedRequestNeedsValue()
+          );
+        }
+
+        function updateRequestSelectionSummary() {
+          const allSelections = Array.from(selectedRequestNeeds.values());
+
+          // The summary beside the category includes every checked category,
+          // including selections retained while switching dropdowns.
+          const pricedItems = allSelections.filter(function (item) {
+            return typeof item.price === "number";
+          });
+
+          const grandTotal = pricedItems.reduce(function (sum, item) {
+            return sum + (item.price * item.quantity);
+          }, 0);
+
+          const totalQuantity = allSelections.reduce(function (sum, item) {
+            return sum + item.quantity;
+          }, 0);
+
+          $("#request-panel-selected-count").text(totalQuantity);
+          $("#request-grand-total").text(formatRequestPrice(grandTotal));
+          syncRequestNeedsToForminator();
+        }
+
+        function renderRequestNeeds(categoryKey) {
+          const container = $("#request_container");
+          const category = requestNeedsCatalog[categoryKey];
+
+          container.empty();
+
+          if (!category) {
+            $('<div class="request-empty-message"></div>')
+              .text("Select your needs first to show the fields.")
+              .appendTo(container);
+            updateRequestSelectionSummary();
+            return;
+          }
+
+
+          const card = $('<div class="request-options-card"></div>')
+            .addClass("request-category-" + categoryKey);
+          const list = $('<div class="request-options-scroll"></div>');
+
+          category.groups.forEach(function (group) {
+            const groupElement = $('<div class="request-group"></div>');
+            const groupHeader = $('<div class="request-group-header"></div>');
+            const groupOptions = $('<div class="request-group-options"></div>');
+
+            $('<span class="request-group-title"></span>')
+              .text(group.title)
+              .appendTo(groupHeader);
+
+            $('<span class="request-group-badge"></span>')
+              .toggleClass("is-lead-time", Boolean(group.leadTime))
+              .text(group.badge)
+              .appendTo(groupHeader);
+
+            groupElement.append(groupHeader);
+
+            group.items.forEach(function (item) {
+              const isSelected = selectedRequestNeeds.has(item.id);
+              const savedSelection = selectedRequestNeeds.get(item.id);
+              const quantity = savedSelection ? savedSelection.quantity : 1;
+              const option = $('<div class="request-option"></div>')
+                .toggleClass("is-selected", isSelected);
+
+              const main = $('<label class="request-option-main"></label>')
+                .attr("for", "request-" + item.id);
+
+              $('<input type="checkbox" class="request-option-checkbox">')
+                .attr({
+                  id: "request-" + item.id,
+                  name: "booking_requested_items[]",
+                  value: item.id,
+                  "data-category": categoryKey,
+                  "data-item-name": item.name,
+                  "data-item-price": typeof item.price === "number" ? item.price : ""
+                })
+                .prop("checked", isSelected)
+                .appendTo(main);
+
+              $('<span class="request-option-name"></span>')
+                .text(item.name)
+                .appendTo(main);
+
+              option.append(main);
+
+              const controls = $('<span class="request-option-controls"></span>');
+
+              $('<input type="number" class="request-option-quantity">')
+                .attr({
+                  id: "request-quantity-" + item.id,
+                  name: "booking_requested_quantity[" + item.id + "]",
+                  min: 1,
+                  max: 999,
+                  step: 1,
+                  inputmode: "numeric",
+                  "data-item-id": item.id,
+                  "aria-label": "Quantity for " + item.name
+                })
+                .val(quantity)
+                .prop("disabled", !isSelected)
+                .appendTo(controls);
+
+              if (typeof item.price === "number") {
+                $('<span class="request-option-price"></span>')
+                  .text(formatRequestPrice(item.price))
+                  .appendTo(controls);
+              }
+
+              option.append(controls);
+
+              groupOptions.append(option);
+            });
+
+            groupElement.append(groupOptions);
+            list.append(groupElement);
+          });
+
+          card.append(list);
+
+          if (category.note) {
+            $('<div class="request-availability-note"></div>')
+              .text(category.note)
+              .appendTo(card);
+          }
+
+          container.append(card);
+          updateRequestSelectionSummary();
+        }
+
+        $(document).on("change", "#booking-needs-category", function () {
+          renderRequestNeeds($(this).val());
+        });
+
+        $(document).on("change", "#request_container .request-option-checkbox", function () {
+          const checkbox = $(this);
+          const rawPrice = checkbox.attr("data-item-price");
+          const quantityInput = checkbox.closest(".request-option")
+            .find(".request-option-quantity");
+
+          if (checkbox.prop("checked")) {
+            quantityInput.prop("disabled", false);
+
+            const quantity = Math.max(
+              1,
+              parseInt(
+                quantityInput.val(),
+                10
+              ) || 1
+            );
+
+            selectedRequestNeeds.set(checkbox.val(), {
+              id: checkbox.val(),
+              category: checkbox.attr("data-category"),
+              name: checkbox.attr("data-item-name"),
+              price: rawPrice === "" ? null : Number(rawPrice),
+              quantity: quantity
+            });
+          } else {
+            quantityInput.prop("disabled", true);
+            selectedRequestNeeds.delete(checkbox.val());
+          }
+
+          checkbox.closest(".request-option")
+            .toggleClass("is-selected", checkbox.prop("checked"));
+
+          updateRequestSelectionSummary();
+        });
+
+        $(document).on(
+          "input change",
+          "#request_container .request-option-quantity",
+          function () {
+            const quantityInput = $(this);
+            const option = quantityInput.closest(".request-option");
+            const checkbox = option.find(".request-option-checkbox");
+            let quantity = parseInt(quantityInput.val(), 10);
+
+            if (!Number.isFinite(quantity) || quantity < 1) {
+              quantity = 1;
+            }
+
+            if (quantity > 999) {
+              quantity = 999;
+            }
+
+            quantityInput.val(quantity);
+
+            if (checkbox.prop("checked") && selectedRequestNeeds.has(checkbox.val())) {
+              selectedRequestNeeds.get(checkbox.val()).quantity = quantity;
+              updateRequestSelectionSummary();
+            }
+          }
+        );
+
+        /* =========================================================
+           FRONT-END: BOOKING PERIOD / BOOKING TIME RANGE
+           ========================================================= */
+
+        // Booking Time is hidden by default.
+        //
+        // MORNING:
+        // From / To choices are limited to 8:00 AM - 12:00 PM
+        //
+        // AFTERNOON:
+        // From / To choices are limited to 12:00 PM - 10:00 PM
+        //
+        // Time options use 30-minute intervals.
+
+        function formatBookingTime(hour, minute) {
+          const period = hour >= 12 ? "PM" : "AM";
+          const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+          const displayMinute = String(minute).padStart(2, "0");
+
+          return `${displayHour}:${displayMinute} ${period}`;
+        }
+
+        function timeValue(hour, minute) {
+          return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+        }
+
+        function getPeriodRange(period) {
+          if (period === "Morning") {
+            return {
+              startHour: 8,
+              startMinute: 0,
+              endHour: 12,
+              endMinute: 0,
+              label: "Available time: 8:00 AM to 12:00 PM"
+            };
+          }
+
+          if (period === "Afternoon") {
+            return {
+              startHour: 12,
+              startMinute: 0,
+              endHour: 22,
+              endMinute: 0,
+              label: "Available time: 12:00 PM to 10:00 PM"
+            };
+          }
+
+          if (period === "Whole Day") {
+            return {
+              startHour: 8,
+              startMinute: 0,
+              endHour: 22,
+              endMinute: 0,
+              label: "Whole Day must start in AM and end in PM"
+            };
+          }
+
+          return null;
+        }
+
+        function buildTimeSelectOptions(selectElement, startMinutes, endMinutes, placeholder) {
+          const select = $(selectElement);
+
+          select.empty();
+          select.append(
+            $("<option>", {
+              value: "",
+              text: placeholder
+            })
+          );
+
+          for (
+            let currentMinutes = startMinutes;
+            currentMinutes <= endMinutes;
+            currentMinutes += 30
+          ) {
+            const hour = Math.floor(currentMinutes / 60);
+            const minute = currentMinutes % 60;
+
+            select.append(
+              $("<option>", {
+                value: timeValue(hour, minute),
+                text: formatBookingTime(hour, minute)
+              })
+            );
+          }
+        }
+
+        function resetBookingTime() {
+          $("#booking-time-container").hide();
+
+          $("#booking-time-from")
+            .empty()
+            .append('<option value="">Select from</option>')
+            .val("")
+            .prop("required", false)
+            .removeClass("is-invalid");
+
+          $("#booking-time-to")
+            .empty()
+            .append('<option value="">Select to</option>')
+            .val("")
+            .prop("required", false)
+            .removeClass("is-invalid");
+
+          $("#booking-time-help").text("");
+        }
+
+        function configureBookingTime(period) {
+          const range = getPeriodRange(period);
+
+          if (!range) {
+            resetBookingTime();
+            return;
+          }
+
+          const availableStarts =
+            getAvailableStartTimes(
+              selectedDate,
+              period
+            );
+
+          const fromSelect =
+            $("#booking-time-from");
+
+          const toSelect =
+            $("#booking-time-to");
+
+          fromSelect
+            .empty()
+            .append(
+              '<option value="">Select from</option>'
+            );
+
+          toSelect
+            .empty()
+            .append(
+              '<option value="">Select to</option>'
+            );
+
+          availableStarts.forEach(
+            function (value) {
+              const minutes =
+                bookingTimeToMinutes(value);
+
+              const hour =
+                Math.floor(minutes / 60);
+
+              const minute =
+                minutes % 60;
+
+              fromSelect.append(
+                $("<option>", {
+                  value: value,
+                  text: formatBookingTime(
+                    hour,
+                    minute
+                  )
+                })
+              );
+            }
+          );
+
+          fromSelect
+            .prop("required", true)
+            .prop(
+              "disabled",
+              !availableStarts.length
+            )
+            .removeClass("is-invalid");
+
+          toSelect
+            .prop("required", true)
+            .prop("disabled", true)
+            .removeClass("is-invalid");
+
+          if (availableStarts.length) {
+            const firstAvailableStart =
+              availableStarts[0];
+
+            let availabilityText =
+              range.label;
+
+            if (firstAvailableStart) {
+              const firstMinutes =
+                bookingTimeToMinutes(
+                  firstAvailableStart
+                );
+
+              availabilityText +=
+                period === "Whole Day"
+                  ? (
+                      " — Earliest AM start: " +
+                      formatBookingTime(
+                        Math.floor(firstMinutes / 60),
+                        firstMinutes % 60
+                      ) +
+                      ". End time must be PM."
+                    )
+                  : (
+                      " — Next available start: " +
+                      formatBookingTime(
+                        Math.floor(firstMinutes / 60),
+                        firstMinutes % 60
+                      )
+                    );
+            }
+
+            $("#booking-time-help").text(
+              availabilityText
+            );
+          } else {
+            $("#booking-time-help").text(
+              "No available time remains in the selected period."
+            );
+          }
+
+          $("#booking-time-container")
+            .stop(true, true)
+            .slideDown(180);
+        }
+
+        // Booking Period controls which available From / To choices appear.
+        $(document).on("change", "#booking-period", function () {
+          configureBookingTime($(this).val());
+        });
+
+        // Once a From time is selected, show only valid ending times
+        // that do not overlap any existing reservation.
+        $(document).on("change", "#booking-time-from", function () {
+          const period =
+            $("#booking-period").val();
+
+          const fromValue =
+            $(this).val();
+
+          const toSelect =
+            $("#booking-time-to");
+
+          toSelect
+            .removeClass("is-invalid")
+            .empty()
+            .append(
+              '<option value="">Select to</option>'
+            );
+
+          if (!period || !fromValue) {
+            toSelect.prop(
+              "disabled",
+              true
+            );
+            return;
+          }
+
+          const availableToTimes =
+            getAvailableToTimes(
+              selectedDate,
+              period,
+              fromValue
+            );
+
+          availableToTimes.forEach(
+            function (value) {
+              const minutes =
+                bookingTimeToMinutes(value);
+
+              const hour =
+                Math.floor(minutes / 60);
+
+              const minute =
+                minutes % 60;
+
+              toSelect.append(
+                $("<option>", {
+                  value: value,
+                  text: formatBookingTime(
+                    hour,
+                    minute
+                  )
+                })
+              );
+            }
+          );
+
+          toSelect
+            .prop(
+              "disabled",
+              !availableToTimes.length
+            )
+            .val("");
+        });
+
+        // Final UI validation:
+        // To must always be later than From.
+        $(document).on("change", "#booking-time-to", function () {
+          const fromValue = $("#booking-time-from").val();
+          const toValue = $(this).val();
+
+          if (!fromValue || !toValue) {
+            return;
+          }
+
+          if (toValue <= fromValue) {
+            $(this).val("").addClass("is-invalid");
+
+            Swal.fire({
+              icon: "error",
+              title: "Invalid Booking Time",
+              text: "The 'To' time must be later than the 'From' time.",
+              confirmButtonText: "OK"
+            });
+
+            return;
+          }
+
+          const selectedBookingPeriod =
+            normalizePeriod(
+              $("#booking-period").val()
+            );
+
+          if (
+            selectedBookingPeriod === "Whole Day"
+          ) {
+            const fromMinutes =
+              bookingTimeToMinutes(fromValue);
+
+            const toMinutes =
+              bookingTimeToMinutes(toValue);
+
+            if (
+              fromMinutes === null ||
+              toMinutes === null ||
+              fromMinutes >= (12 * 60) ||
+              toMinutes < (12 * 60)
+            ) {
+              $(this)
+                .val("")
+                .addClass("is-invalid");
+
+              Swal.fire({
+                icon: "error",
+                title: "Whole Day Requires AM to PM",
+                text: "For a Whole Day booking, the From time must be in the morning and the To time must be in the afternoon or evening.",
+                confirmButtonText: "OK"
+              });
+
+              return;
+            }
+          }
+
+          if (
+            !isTimeRangeAvailable(
+              selectedDate,
+              fromValue,
+              toValue
+            )
+          ) {
+            $(this).val("").addClass("is-invalid");
+
+            Swal.fire({
+              icon: "error",
+              title: "Time Already Taken",
+              text: "That time range overlaps an existing booking.",
+              confirmButtonText: "OK"
+            });
+
+            return;
+          }
+
+          $(this).removeClass("is-invalid");
+        });
+
+        // Reset the Booking Time UI when the booking modal is closed.
+        $("#bookingFormModal").on("hidden.bs.modal", function () {
+          if (!$("#booking-period").val()) {
+            resetBookingTime();
+          }
+        });
+
+        /* =========================================================
+           FRONT-END: DYNAMIC VISITOR NAME FIELDS
+           ========================================================= */
+
+        // Re-numbers all existing visitor rows after add/remove.
+        // Example: 1.  2.  3. ...
+        function renumberVisitorFields() {
+          $("#visitors_container .visitor-field-row").each(function (index) {
+            const visitorNumber = index + 1;
+            const row = $(this);
+
+            row.attr("data-visitor-index", visitorNumber);
+            row.find(".visitor-number").text(visitorNumber + ".");
+            row.find(".visitor-name-input")
+              .attr("name", "visitor_name[]")
+              .attr("id", "visitor-name-" + visitorNumber)
+              .attr("data-forminator-field", "text-" + (visitorNumber + 8))
+              .attr("placeholder", "Enter visitor " + visitorNumber + " full name")
+              .attr("aria-label", "Visitor " + visitorNumber + " name");
+
+            row.find(".visitor-remove-btn")
+              .attr("aria-label", "Remove visitor " + visitorNumber)
+              .attr("title", "Remove visitor " + visitorNumber);
+          });
+        }
+
+        // Keeps the No. of Pax field equal to the actual number
+        // of generated visitor name fields.
+        function syncPaxCountFromVisitorFields() {
+          const totalVisitors =
+            $("#visitors_container .visitor-field-row").length;
+
+          $("#number-of-pax").val(totalVisitors || "");
+        }
+
+        // Creates one visitor field.
+        function createVisitorField(visitorNumber, existingValue) {
+          const safeValue = existingValue || "";
+
+          return $(`
+            <div class="visitor-field-row" data-visitor-index="${visitorNumber}">
+              <div class="visitor-input-wrap">
+                <span class="visitor-number">${visitorNumber}.</span>
+
+                <input
+                  type="text"
+                  class="visitor-name-input"
+                  name="visitor_name[]"
+                  id="visitor-name-${visitorNumber}"
+                  data-forminator-field="text-${visitorNumber + 8}"
+                  placeholder="Enter visitor ${visitorNumber} full name"
+                  aria-label="Visitor ${visitorNumber} name"
+                  autocomplete="off"
+                  maxlength="100"
+                  required
+                >
+
+                <button
+                  type="button"
+                  class="visitor-remove-btn"
+                  aria-label="Remove visitor ${visitorNumber}"
+                  title="Remove visitor ${visitorNumber}"
+                >
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+          `).find(".visitor-name-input").val(safeValue).end();
+        }
+
+        // Generates exactly the number of visitor fields entered
+        // in the No. of Pax input.
+        //
+        // Existing names are preserved when the pax number changes.
+        const MAX_PAX = 20;
+
+        function showMaxPaxError() {
+          Swal.fire({
+            icon: "error",
+            title: "Maximum Pax Reached",
+            text: "The maximum allowed number of pax is 20.",
+            confirmButtonText: "OK"
+          });
+        }
+
+        function renderVisitorFields(requestedCount) {
+          let count = parseInt(requestedCount, 10);
+
+          if (Number.isNaN(count) || count < 0) {
+            count = 0;
+          }
+
+          // FRONT-END LIMIT:
+          // A maximum of 20 visitors is allowed.
+          if (count > MAX_PAX) {
+            showMaxPaxError();
+            count = MAX_PAX;
+            $("#number-of-pax").val(MAX_PAX);
+          }
+
+          const existingNames = $("#visitors_container .visitor-name-input")
+            .map(function () {
+              return $(this).val();
+            })
+            .get();
+
+          const container = $("#visitors_container");
+          container.empty();
+
+          if (count === 0) {
+            container.html(`
+              <div class="visitor-empty-message">
+                Enter the No. of Pax to generate visitor name fields.
+              </div>
+            `);
+
+            $("#number-of-pax").val("");
+            return;
+          }
+
+          for (let index = 0; index < count; index++) {
+            container.append(
+              createVisitorField(index + 1, existingNames[index] || "")
+            );
+          }
+
+          renumberVisitorFields();
+          $("#number-of-pax").val(count);
+        }
+
+        // No. of Pax -> generate matching Visitor's Name fields.
+        $(document).on("input change", "#number-of-pax", function () {
+          const rawValue = $(this).val();
+
+          if (rawValue === "") {
+            renderVisitorFields(0);
+            return;
+          }
+
+          let count = parseInt(rawValue, 10);
+
+          if (Number.isNaN(count) || count < 0) {
+            count = 0;
+          }
+
+          if (count > MAX_PAX) {
+            showMaxPaxError();
+            count = MAX_PAX;
+            $(this).val(MAX_PAX);
+          }
+
+          renderVisitorFields(count);
+        });
+
+        // Remove only the clicked visitor.
+        // Afterwards: renumber rows + automatically decrease No. of Pax.
+        $(document).on("click", ".visitor-remove-btn", function () {
+          $(this).closest(".visitor-field-row").remove();
+
+          const remainingVisitors =
+            $("#visitors_container .visitor-field-row").length;
+
+          if (remainingVisitors === 0) {
+            renderVisitorFields(0);
+            return;
+          }
+
+          renumberVisitorFields();
+          syncPaxCountFromVisitorFields();
+        });
+
+        function normalizePreloadedDate(value) {
+          const raw = String(value || "").trim();
+
+          if (!raw) {
+            return "";
+          }
+
+          const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+          if (isoMatch) {
+            return raw;
+          }
+
+          const parsedDate = new Date(raw);
+
+          if (Number.isNaN(parsedDate.getTime())) {
+            return "";
+          }
+
+          return formatDate(parsedDate);
+        }
+
+        function normalizePeriod(value) {
+          const period = String(value || "").trim().toLowerCase();
+
+          if (period === "morning") {
+            return "Morning";
+          }
+
+          if (period === "afternoon") {
+            return "Afternoon";
+          }
+
+          if (
+            period === "whole day" ||
+            period === "wholeday" ||
+            period === "whole-day"
+          ) {
+            return "Whole Day";
+          }
+
+          return "";
+        }
+
+        function getDateBookings(dateString) {
+          if (!bookingRecords.has(dateString)) {
+            bookingRecords.set(dateString, new Map());
+          }
+
+          return bookingRecords.get(dateString);
+        }
+
+        /*
+         * Forminator preload data can arrive as flat properties, a keyed
+         * meta_data object, or an array of { name, value } records. These
+         * helpers allow the collateral value in textarea-3 to be read from
+         * all of those formats after WordPress reloads the page.
+         */
+        function unwrapPreloadedFieldValue(value) {
+          if (value === null || typeof value === "undefined") {
+            return "";
+          }
+
+          if (Array.isArray(value)) {
+            return value
+              .map(unwrapPreloadedFieldValue)
+              .filter(Boolean)
+              .join("\n");
+          }
+
+          if (typeof value === "object") {
+            const valueKeys = [
+              "value",
+              "raw_value",
+              "rawValue",
+              "field_value",
+              "fieldValue",
+              "submitted_value",
+              "submittedValue"
+            ];
+
+            for (const key of valueKeys) {
+              if (Object.prototype.hasOwnProperty.call(value, key)) {
+                return unwrapPreloadedFieldValue(value[key]);
+              }
+            }
+
+            return "";
+          }
+
+          return String(value).trim();
+        }
+
+        function normalizePreloadedFieldKey(value) {
+          return String(value || "")
+            .trim()
+            .toLowerCase()
+            .replace(/_/g, "-");
+        }
+
+        function getPreloadedFieldValue(item, aliases) {
+          const acceptedKeys = new Set(
+            aliases.map(normalizePreloadedFieldKey)
+          );
+
+          const containers = [
+            item,
+            item && item.meta,
+            item && item.meta_data,
+            item && item.metaData,
+            item && item.metadata,
+            item && item.fields,
+            item && item.data
+          ];
+
+          for (const container of containers) {
+            if (!container || typeof container !== "object") {
+              continue;
+            }
+
+            if (Array.isArray(container)) {
+              for (const entry of container) {
+                if (!entry || typeof entry !== "object") {
+                  continue;
+                }
+
+                const entryKey =
+                  entry.name || entry.key || entry.field_name ||
+                  entry.fieldName || entry.slug || entry.id || "";
+
+                if (acceptedKeys.has(normalizePreloadedFieldKey(entryKey))) {
+                  return unwrapPreloadedFieldValue(entry);
+                }
+              }
+
+              continue;
+            }
+
+            for (const key of Object.keys(container)) {
+              if (acceptedKeys.has(normalizePreloadedFieldKey(key))) {
+                return unwrapPreloadedFieldValue(container[key]);
+              }
+            }
+          }
+
+          return "";
+        }
+
+        function applyBookingData(bookings) {
+          bookingRecords.clear();
+          bookedDateRecords.clear();
+
+          bookings.forEach(function (item) {
+            if (!item || typeof item !== "object") {
+              return;
+            }
+
+            const meta = item.meta || {};
+
+            const rawDate =
+              item.date || item["text-2"] || item.text_2 ||
+              meta["text-2"] || meta.text_2 || "";
+
+            const rawName =
+              item.name || item.booked_by || item["text-1"] || item.text_1 ||
+              meta["text-1"] || meta.text_1 || "";
+
+            const rawDepartment =
+              item.department || item["text-5"] || item.text_5 ||
+              meta["text-5"] || meta.text_5 || "";
+
+            const rawPurpose =
+              item.purpose || item["textarea-1"] || item.textarea_1 ||
+              meta["textarea-1"] || meta.textarea_1 || "";
+
+            const rawRemarks =
+              item.remarks || item["textarea-2"] || item.textarea_2 ||
+              meta["textarea-2"] || meta.textarea_2 || "";
+
+            const rawRequestNeeds = getPreloadedFieldValue(
+              item,
+              [
+                "textarea-3",
+                "textarea_3",
+                "request-needs",
+                "request_needs",
+                "requested-items",
+                "requested_items",
+                "marketing-collaterals",
+                "marketing_collaterals",
+                "marketing-collateral",
+                "marketing_collateral",
+                "item-description",
+                "item_description"
+              ]
+            );
+
+            const rawPeriod =
+              item.period || item.slot || item["text-4"] || item.text_4 ||
+              meta["text-4"] || meta.text_4 || "";
+
+            const rawTimeFrom =
+              item.time_from || item.timeFrom || item["text-6"] || item.text_6 ||
+              meta["text-6"] || meta.text_6 || "";
+
+            const rawTimeTo =
+              item.time_to || item.timeTo || item["text-7"] || item.text_7 ||
+              meta["text-7"] || meta.text_7 || "";
+
+            const rawPax =
+              item.no_of_pax || item.pax || item["text-8"] || item.text_8 ||
+              meta["text-8"] || meta.text_8 || 0;
+
+            let visitors = [];
+
+            if (Array.isArray(item.visitors)) {
+              visitors = item.visitors
+                .map(function (visitor) {
+                  if (visitor && typeof visitor === "object") {
+                    return String(visitor.name || "").trim();
+                  }
+                  return String(visitor || "").trim();
+                })
+                .filter(Boolean);
+            } else {
+              for (let visitorIndex = 1; visitorIndex <= 20; visitorIndex++) {
+                const fieldNumber = visitorIndex + 8;
+                const rawVisitor =
+                  item[`visitor_${visitorIndex}`] ||
+                  item[`text-${fieldNumber}`] ||
+                  item[`text_${fieldNumber}`] ||
+                  meta[`text-${fieldNumber}`] ||
+                  meta[`text_${fieldNumber}`] ||
+                  "";
+
+                const visitorName = String(rawVisitor || "").trim();
+                if (visitorName) {
+                  visitors.push(visitorName);
+                }
+              }
+            }
+
+            const dateString = normalizePreloadedDate(rawDate);
+            const period = normalizePeriod(rawPeriod);
+
+            if (!dateString) {
+              return;
+            }
+
+            const booking = {
+              entryId: Number(item.entry_id || item.entryId || 0),
+              date: dateString,
+              department: String(rawDepartment || "").trim(),
+              name: String(rawName || "").trim(),
+              purpose: String(rawPurpose || ""),
+              remarks: String(rawRemarks || ""),
+              requestNeeds: String(rawRequestNeeds || ""),
+              period: period,
+              timeFrom: String(rawTimeFrom || "").trim(),
+              timeTo: String(rawTimeTo || "").trim(),
+              pax: Number.parseInt(rawPax, 10) || visitors.length || 0,
+              visitors: visitors
+            };
+
+            if (!bookedDateRecords.has(dateString)) {
+              bookedDateRecords.set(dateString, []);
+            }
+
+            bookedDateRecords.get(dateString).push(booking);
+
+            if (period) {
+              const dateBookings = getDateBookings(dateString);
+              if (!dateBookings.has(period)) {
+                dateBookings.set(period, booking);
+              }
+            }
+          });
+        }
+
+        function loadPreloadedForminatorBookings() {
+          /*
+           * Support both preload variable names.
+           *
+           * New PHP:
+           * window.WCPI_SHOWROOM_PRELOADED_BOOKINGS
+           *
+           * Older front-end:
+           * window.wcpiShowroomBookings
+           */
+          let bookings = [];
+
+          if (
+            Array.isArray(
+              window.WCPI_SHOWROOM_PRELOADED_BOOKINGS
+            )
+          ) {
+            bookings =
+              window.WCPI_SHOWROOM_PRELOADED_BOOKINGS;
+          } else if (
+            Array.isArray(
+              window.wcpiShowroomBookings
+            )
+          ) {
+            bookings =
+              window.wcpiShowroomBookings;
+          }
+
+          console.log(
+            "[WCPI Showroom] Preloaded bookings:",
+            bookings
+          );
+
+          applyBookingData(bookings);
+
+          if (!bookings.length) {
+            console.warn(
+              "[WCPI Showroom] No preloaded Forminator bookings found."
+            );
+          }
+        }
+
+        function getForminatorSubmitButton() {
+          const form = getForminatorForm();
+
+          if (!form.length) {
+            return $();
+          }
+
+          return form.find(
+            'button.forminator-button-submit, ' +
+            'button[type="submit"], ' +
+            'input[type="submit"]'
+          ).first();
+        }
+
+        function getForminatorForm() {
+          const selectors = [
+            `#forminator-module-${forminatorConfig.formId}`,
+            `.forminator-custom-form[data-form-id="${forminatorConfig.formId}"]`,
+            `form.forminator-custom-form[data-form-id="${forminatorConfig.formId}"]`,
+            `form[id*="forminator-module-${forminatorConfig.formId}"]`
+          ];
+
+          for (const selector of selectors) {
+            const form = $(selector).first();
+            if (form.length) {
+              return form;
+            }
+          }
+
+          return $();
+        }
+
+        function getForminatorField(fieldName) {
+          const form = getForminatorForm();
+          if (!form.length) {
+            return $();
+          }
+
+          return form.find(
+            `[name="${fieldName}"], ` +
+            `[name="${fieldName}[]"], ` +
+            `#forminator-field-${fieldName}`
+          ).first();
+        }
+
+        function setForminatorField(fieldName, value) {
+          const field = getForminatorField(fieldName);
+
+          if (!field.length) {
+            return false;
+          }
+
+          field.val(value);
+          field.trigger("input");
+          field.trigger("change");
+          field.trigger("blur");
+
+          return true;
+        }
+
+        function syncSelectedDateToForminator(dateString) {
+          setForminatorField(
+            forminatorConfig.dateField,
+            dateString || ""
+          );
+        }
+
+        function syncSelectedPeriodToForminator(period) {
+          setForminatorField(
+            forminatorConfig.periodField,
+            normalizePeriod(period)
+          );
+        }
+
+        function syncBookingDetailsToForminator() {
+          // ---------------------------------------------------------
+          // MAIN BOOKING FIELDS
+          // ---------------------------------------------------------
+          setForminatorField(
+            forminatorConfig.departmentField,
+            $("#department").val() || ""
+          );
+
+          setForminatorField(
+            forminatorConfig.bookedByField,
+            $("#booking-name").val() || ""
+          );
+
+          syncSelectedPeriodToForminator(
+            $("#booking-period").val() || ""
+          );
+
+          setForminatorField(
+            forminatorConfig.timeFromField,
+            $("#booking-time-from").val() || ""
+          );
+
+          setForminatorField(
+            forminatorConfig.timeToField,
+            $("#booking-time-to").val() || ""
+          );
+
+          setForminatorField(
+            forminatorConfig.paxField,
+            $("#number-of-pax").val() || ""
+          );
+
+          setForminatorField(
+            forminatorConfig.purposeField,
+            $("#booking-purpose").val() || ""
+          );
+
+          setForminatorField(
+            forminatorConfig.remarksField,
+            $("#booking-remarks").val() || ""
+          );
+
+          syncRequestNeedsToForminator();
+
+          syncSelectedDateToForminator(selectedDate);
+
+          // ---------------------------------------------------------
+          // VISITOR FIELDS
+          //
+          // Visitor 1  -> text-9
+          // Visitor 2  -> text-10
+          // ...
+          // Visitor 20 -> text-28
+          //
+          // IMPORTANT:
+          // Clear all 20 Forminator visitor fields first. This prevents
+          // old visitor names from remaining when pax is reduced.
+          // ---------------------------------------------------------
+          forminatorConfig.visitorFields.forEach(function (fieldName) {
+            setForminatorField(fieldName, "");
+          });
+
+          $("#visitors_container .visitor-name-input").each(
+            function (index) {
+              if (index >= forminatorConfig.visitorFields.length) {
+                return false;
+              }
+
+              setForminatorField(
+                forminatorConfig.visitorFields[index],
+                $(this).val() || ""
+              );
+            }
+          );
+        }
+
+        function formatDate(date) {
+          const year = date.getFullYear();
+          const month = String(
+            date.getMonth() + 1
+          ).padStart(2, "0");
+
+          const day = String(
+            date.getDate()
+          ).padStart(2, "0");
+
+          return `${year}-${month}-${day}`;
+        }
+
+        function createOffsetDate(offset) {
+          const date = new Date();
+
+          date.setHours(0, 0, 0, 0);
+          date.setDate(date.getDate() + offset);
+
+          return formatDate(date);
+        }
+
+        /* =========================================================
+           TIME-BASED AVAILABILITY
+
+           Booking sequence rule:
+           - Morning operating range: 8:00 AM - 12:00 PM
+           - Afternoon operating range: 12:00 PM - 10:00 PM
+           - New booking starts after the latest existing booking
+           - 30-minute allowance between bookings
+           ========================================================= */
+
+        function bookingTimeToMinutes(value) {
+          const time = String(value || "").trim();
+
+          if (!/^\d{2}:\d{2}$/.test(time)) {
+            return null;
+          }
+
+          const parts = time.split(":").map(Number);
+          const hour = parts[0];
+          const minute = parts[1];
+
+          if (
+            Number.isNaN(hour) ||
+            Number.isNaN(minute) ||
+            hour < 0 ||
+            hour > 23 ||
+            minute < 0 ||
+            minute > 59
+          ) {
+            return null;
+          }
+
+          return (hour * 60) + minute;
+        }
+
+        function minutesToBookingValue(totalMinutes) {
+          const hour = Math.floor(totalMinutes / 60);
+          const minute = totalMinutes % 60;
+
+          return (
+            String(hour).padStart(2, "0") +
+            ":" +
+            String(minute).padStart(2, "0")
+          );
+        }
+
+        function getBookingsForDate(dateString) {
+          return bookedDateRecords.get(dateString) || [];
+        }
+
+        function rangesOverlap(
+          startA,
+          endA,
+          startB,
+          endB
+        ) {
+          /*
+           * Adjacent bookings are allowed.
+           *
+           * Example:
+           * Existing 8:00-9:00
+           * New      9:00-10:00
+           *
+           * This is NOT an overlap.
+           */
+          return startA < endB && endA > startB;
+        }
+
+        function isTimeRangeAvailable(
+          dateString,
+          timeFrom,
+          timeTo
+        ) {
+          const requestedStart =
+            bookingTimeToMinutes(timeFrom);
+
+          const requestedEnd =
+            bookingTimeToMinutes(timeTo);
+
+          if (
+            requestedStart === null ||
+            requestedEnd === null ||
+            requestedEnd <= requestedStart
+          ) {
+            return false;
+          }
+
+          const records =
+            getBookingsForDate(dateString);
+
+          return !records.some(function (booking) {
+            const existingStart =
+              bookingTimeToMinutes(
+                booking.timeFrom
+              );
+
+            const existingEnd =
+              bookingTimeToMinutes(
+                booking.timeTo
+              );
+
+            /*
+             * Older entries without valid From/To values
+             * cannot be checked accurately by time.
+             *
+             * They remain visible in the calendar, but they
+             * do not block an exact time range.
+             */
+            if (
+              existingStart === null ||
+              existingEnd === null ||
+              existingEnd <= existingStart
+            ) {
+              return false;
+            }
+
+            return rangesOverlap(
+              requestedStart,
+              requestedEnd,
+              existingStart,
+              existingEnd
+            );
+          });
+        }
+
+        function getAvailableStartTimes(
+          dateString,
+          period
+        ) {
+          const range = getPeriodRange(period);
+
+          if (!range) {
+            return [];
+          }
+
+          const periodStartMinutes =
+            (range.startHour * 60) +
+            range.startMinute;
+
+          const periodEndMinutes =
+            (range.endHour * 60) +
+            range.endMinute;
+
+          const records =
+            getBookingsForDate(dateString);
+
+          /*
+           * WHOLE DAY:
+           * - From must be AM (< 12:00 PM)
+           * - To must be PM (>= 12:00 PM)
+           * - If there is an existing morning booking, Whole Day
+           *   starts immediately after that booking ends.
+           *
+           * Example:
+           * Existing: 8:00 AM - 10:00 AM
+           * Whole Day From starts at 10:00 AM.
+           */
+          if (period === "Whole Day") {
+            let earliestAllowedStart =
+              periodStartMinutes;
+
+            records.forEach(function (booking) {
+              const existingStart =
+                bookingTimeToMinutes(
+                  booking.timeFrom
+                );
+
+              const existingEnd =
+                bookingTimeToMinutes(
+                  booking.timeTo
+                );
+
+              if (
+                existingStart === null ||
+                existingEnd === null ||
+                existingEnd <= existingStart
+              ) {
+                return;
+              }
+
+              /*
+               * Morning-side bookings determine the next Whole Day
+               * AM start. No extra 30-minute buffer is added here.
+               */
+              if (
+                existingStart < (12 * 60) &&
+                existingEnd <= (12 * 60)
+              ) {
+                earliestAllowedStart =
+                  Math.max(
+                    earliestAllowedStart,
+                    existingEnd
+                  );
+              }
+            });
+
+            earliestAllowedStart =
+              Math.ceil(
+                earliestAllowedStart / 30
+              ) * 30;
+
+            const wholeDayStarts = [];
+
+            /*
+             * Whole Day must START in AM.
+             * Therefore From can only be 8:00 AM through 11:30 AM.
+             */
+            for (
+              let current = earliestAllowedStart;
+              current < (12 * 60);
+              current += 30
+            ) {
+              const fromValue =
+                minutesToBookingValue(current);
+
+              if (
+                getAvailableWholeDayToTimes(
+                  dateString,
+                  fromValue
+                ).length
+              ) {
+                wholeDayStarts.push(
+                  fromValue
+                );
+              }
+            }
+
+            return wholeDayStarts;
+          }
+
+          /*
+           * Morning / Afternoon use the existing sequential rule:
+           * continue after the latest booking plus 30 minutes.
+           */
+          let earliestAllowedStart =
+            periodStartMinutes;
+
+          records.forEach(function (booking) {
+            const existingStart =
+              bookingTimeToMinutes(
+                booking.timeFrom
+              );
+
+            const existingEnd =
+              bookingTimeToMinutes(
+                booking.timeTo
+              );
+
+            if (
+              existingStart === null ||
+              existingEnd === null ||
+              existingEnd <= existingStart
+            ) {
+              return;
+            }
+
+            if (
+              existingEnd <= periodStartMinutes ||
+              existingStart >= periodEndMinutes
+            ) {
+              return;
+            }
+
+            earliestAllowedStart =
+              Math.max(
+                earliestAllowedStart,
+                existingEnd + 30
+              );
+          });
+
+          earliestAllowedStart =
+            Math.ceil(
+              earliestAllowedStart / 30
+            ) * 30;
+
+          const availableStarts = [];
+
+          for (
+            let current = earliestAllowedStart;
+            current <= periodEndMinutes - 30;
+            current += 30
+          ) {
+            const fromValue =
+              minutesToBookingValue(current);
+
+            const minimumToValue =
+              minutesToBookingValue(
+                current + 30
+              );
+
+            if (
+              isTimeRangeAvailable(
+                dateString,
+                fromValue,
+                minimumToValue
+              )
+            ) {
+              availableStarts.push(
+                fromValue
+              );
+            }
+          }
+
+          return availableStarts;
+        }
+
+        function periodHasAvailability(
+          dateString,
+          period
+        ) {
+          return (
+            getAvailableStartTimes(
+              dateString,
+              period
+            ).length > 0
+          );
+        }
+
+        /*
+         * Keep this function name because other parts of the
+         * existing code already call it.
+         *
+         * It now means:
+         * "there are NO available 30-minute time ranges left
+         * in this period."
+         */
+        function isSlotBooked(
+          dateString,
+          period
+        ) {
+          return !periodHasAvailability(
+            dateString,
+            period
+          );
+        }
+
+        function getBookedSlotCount(dateString) {
+          return getBookingsForDate(
+            dateString
+          ).length;
+        }
+
+        function isDateFullyBooked(dateString) {
+          return (
+            !periodHasAvailability(
+              dateString,
+              "Morning"
+            ) &&
+            !periodHasAvailability(
+              dateString,
+              "Afternoon"
+            )
+          );
+        }
+
+        function getAvailableWholeDayToTimes(
+          dateString,
+          fromValue
+        ) {
+          const fromMinutes =
+            bookingTimeToMinutes(
+              fromValue
+            );
+
+          /*
+           * Whole Day must start in AM.
+           */
+          if (
+            fromMinutes === null ||
+            fromMinutes >= (12 * 60)
+          ) {
+            return [];
+          }
+
+          const availableToTimes = [];
+
+          /*
+           * Whole Day must END in PM.
+           * Valid To values are 12:00 PM through 10:00 PM,
+           * subject to existing-booking overlap.
+           */
+          for (
+            let endMinutes = 12 * 60;
+            endMinutes <= 22 * 60;
+            endMinutes += 30
+          ) {
+            if (endMinutes <= fromMinutes) {
+              continue;
+            }
+
+            const toValue =
+              minutesToBookingValue(
+                endMinutes
+              );
+
+            if (
+              isTimeRangeAvailable(
+                dateString,
+                fromValue,
+                toValue
+              )
+            ) {
+              availableToTimes.push(
+                toValue
+              );
+            } else {
+              /*
+               * A later To value would still cross the same
+               * conflicting booking, so stop here.
+               */
+              break;
+            }
+          }
+
+          return availableToTimes;
+        }
+
+        function getAvailableToTimes(
+          dateString,
+          period,
+          fromValue
+        ) {
+          if (period === "Whole Day") {
+            return getAvailableWholeDayToTimes(
+              dateString,
+              fromValue
+            );
+          }
+
+          const range =
+            getPeriodRange(period);
+
+          const fromMinutes =
+            bookingTimeToMinutes(
+              fromValue
+            );
+
+          if (
+            !range ||
+            fromMinutes === null
+          ) {
+            return [];
+          }
+
+          const periodEndMinutes =
+            (range.endHour * 60) +
+            range.endMinute;
+
+          const availableToTimes = [];
+
+          for (
+            let endMinutes =
+              fromMinutes + 30;
+            endMinutes <= periodEndMinutes;
+            endMinutes += 30
+          ) {
+            const toValue =
+              minutesToBookingValue(
+                endMinutes
+              );
+
+            if (
+              isTimeRangeAvailable(
+                dateString,
+                fromValue,
+                toValue
+              )
+            ) {
+              availableToTimes.push(
+                toValue
+              );
+            } else {
+              /*
+               * Once the range reaches an existing booking,
+               * any later "To" value would still cross that
+               * same booking, so stop here.
+               */
+              break;
+            }
+          }
+
+          return availableToTimes;
+        }
+
+        function escapeHtml(value) {
+          return $("<div>").text(value || "").html();
+        }
+
+        function buildCalendarEvents() {
+          const events = [];
+
+          bookedDateRecords.forEach(function (records, dateString) {
+            records.forEach(function (record, index) {
+              const period = normalizePeriod(record.period);
+              let title = "Booked";
+
+              if (
+                record.timeFrom &&
+                record.timeTo
+              ) {
+                title =
+                  formatBookingTimeDisplay(
+                    record.timeFrom
+                  ) +
+                  " - " +
+                  formatBookingTimeDisplay(
+                    record.timeTo
+                  );
+              } else if (period) {
+                title =
+                  period + " Booking";
+              }
+
+              events.push({
+                id:
+                  "booking-" +
+                  (record.entryId || "local") +
+                  "-" +
+                  dateString +
+                  "-" +
+                  index,
+                title: title,
+                start: dateString,
+                allDay: true,
+                classNames: [
+                  "event-booked",
+                  period === "Morning"
+                    ? "event-morning-booked"
+                    : period === "Afternoon"
+                      ? "event-afternoon-booked"
+                      : period === "Whole Day"
+                        ? "event-whole-day-booked"
+                        : "event-unspecified-booked"
+                ],
+                extendedProps: {
+                  date: dateString,
+                  period: period,
+                  department: record.department || "",
+                  name: record.name || "",
+                  purpose: record.purpose || "",
+                  remarks: record.remarks || "",
+                  requestNeeds: record.requestNeeds || "",
+                  timeFrom: record.timeFrom || "",
+                  timeTo: record.timeTo || "",
+                  pax: record.pax || 0,
+                  visitors: Array.isArray(record.visitors) ? record.visitors : []
+                }
+              });
+            });
+          });
+
+          return events;
+        }
+
+        function refreshCalendarBookings() {
+          calendar.removeAllEvents();
+          calendar.addEventSource(buildCalendarEvents());
+
+          window.setTimeout(function () {
+            $(".fc-daygrid-day")
+              .removeClass("booked-calendar-date")
+              .removeClass("fully-booked-calendar-date");
+
+            bookedDateRecords.forEach(function (_records, dateString) {
+              const day = $(`.fc-daygrid-day[data-date="${dateString}"]`);
+              day.addClass("booked-calendar-date");
+
+              if (isDateFullyBooked(dateString)) {
+                day.addClass("fully-booked-calendar-date");
+              }
+            });
+          }, 0);
+        }
+
+        function updateRoomInformation() {
+          $("#calendar-room-title").text(
+            selectedRoom.name
+          );
+
+          $("#modal-room-name").text(
+            selectedRoom.name
+          );
+        }
+
+        function removeSelectedCalendarDate() {
+          $(".fc-daygrid-day").removeClass(
+            "selected-calendar-date"
+          );
+        }
+
+        function highlightSelectedDate(dateString) {
+          removeSelectedCalendarDate();
+
+          $(
+            `.fc-daygrid-day[data-date="${dateString}"]`
+          ).addClass("selected-calendar-date");
+        }
+
+        function formatDisplayDate(dateString) {
+          const date = new Date(
+            `${dateString}T00:00:00`
+          );
+
+          return date.toLocaleDateString(
+            "en-US",
+            {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric"
+            }
+          );
+        }
+
+        function updatePeriodOptions(dateString) {
+          const field = $("#booking-period");
+
+          const morningAvailable =
+            periodHasAvailability(
+              dateString,
+              "Morning"
+            );
+
+          const afternoonAvailable =
+            periodHasAvailability(
+              dateString,
+              "Afternoon"
+            );
+
+          const wholeDayAvailable =
+            periodHasAvailability(
+              dateString,
+              "Whole Day"
+            );
+
+          field.find('option[value="Morning"]')
+            .prop(
+              "disabled",
+              !morningAvailable
+            )
+            .text(
+              morningAvailable
+                ? "Morning"
+                : "Morning — No Time Available"
+            );
+
+          field.find('option[value="Afternoon"]')
+            .prop(
+              "disabled",
+              !afternoonAvailable
+            )
+            .text(
+              afternoonAvailable
+                ? "Afternoon"
+                : "Afternoon — No Time Available"
+            );
+
+          field.find('option[value="Whole Day"]')
+            .prop(
+              "disabled",
+              !wholeDayAvailable
+            )
+            .text(
+              wholeDayAvailable
+                ? "Whole Day"
+                : "Whole Day — No AM-to-PM Range Available"
+            );
+
+          if (
+            field.val() &&
+            !periodHasAvailability(
+              dateString,
+              field.val()
+            )
+          ) {
+            field.val("");
+            selectedPeriod = "";
+            syncSelectedPeriodToForminator("");
+            resetBookingTime();
+          }
+        }
+
+        function renderAvailabilityMessage(dateString) {
+          const message =
+            $("#modal-availability-message");
+
+          const morningAvailable =
+            periodHasAvailability(
+              dateString,
+              "Morning"
+            );
+
+          const afternoonAvailable =
+            periodHasAvailability(
+              dateString,
+              "Afternoon"
+            );
+
+          message.removeClass(
+            "available partial unavailable"
+          );
+
+          if (
+            !morningAvailable &&
+            !afternoonAvailable
+          ) {
+            message
+              .addClass("unavailable")
+              .html(`
+                <span class="availability-status-icon">
+                  <i class="bi bi-x-circle"></i>
+                </span>
+                <div>
+                  <strong>This date is fully booked</strong>
+                  <p>No open 30-minute time range remains between 8:00 AM and 10:00 PM.</p>
+                </div>
+              `);
+            return;
+          }
+
+          const availableLabels = [];
+
+          if (morningAvailable) {
+            availableLabels.push("Morning");
+          }
+
+          if (afternoonAvailable) {
+            availableLabels.push("Afternoon");
+          }
+
+          message
+            .addClass(
+              morningAvailable &&
+              afternoonAvailable
+                ? "available"
+                : "partial"
+            )
+            .html(`
+              <span class="availability-status-icon">
+                <i class="bi bi-calendar-check"></i>
+              </span>
+              <div>
+                <strong>Available times remain on this date</strong>
+                <p>${availableLabels.join(" and ")} still ${
+                  availableLabels.length === 1 ? "has" : "have"
+                } open time ranges. New bookings continue after the latest reserved time in the selected period.</p>
+              </div>
+            `);
+        }
+
+        function formatBookingTimeDisplay(value) {
+          const time = String(value || "").trim();
+          if (!time) {
+            return "Not specified";
+          }
+
+          const parts = time.split(":");
+          if (parts.length < 2) {
+            return time;
+          }
+
+          const hour = Number(parts[0]);
+          const minute = Number(parts[1]);
+          if (Number.isNaN(hour) || Number.isNaN(minute)) {
+            return time;
+          }
+
+          const suffix = hour >= 12 ? "PM" : "AM";
+          const displayHour = hour % 12 || 12;
+          return `${displayHour}:${String(minute).padStart(2, "0")} ${suffix}`;
+        }
+
+        function decodeStoredHtmlEntities(value) {
+          const decoder = document.createElement("textarea");
+          decoder.innerHTML = String(value || "");
+          return decoder.value;
+        }
+
+        function buildMarketingCollateralsDisplay(value) {
+          const decodedValue = decodeStoredHtmlEntities(value).trim();
+
+          if (!decodedValue) {
+            return '<div style="margin-top:5px;color:#667085;">None selected</div>';
+          }
+
+          const lines = decodedValue
+            .split(/\r?\n/)
+            .map(function (line) {
+              return line.trim();
+            })
+            .filter(Boolean);
+
+          const itemPattern = /^(\d+)\.\s*(.*?)\s+\(([^)]+)\)\s*-\s*Qty:\s*(\d+)(?:\s*-\s*(₱[\d,.]+)\s*each\s*-\s*Subtotal:\s*(₱[\d,.]+))?$/i;
+          const totalItemsPattern = /^Total Selected Items:\s*(\d+)$/i;
+          const totalAmountPattern = /^Total Amount:\s*(₱[\d,.]+)$/i;
+          const items = [];
+          let totalItems = "";
+          let totalAmount = "";
+
+          lines.forEach(function (line) {
+            const itemMatch = line.match(itemPattern);
+            const totalItemsMatch = line.match(totalItemsPattern);
+            const totalAmountMatch = line.match(totalAmountPattern);
+
+            if (itemMatch) {
+              items.push({
+                number: itemMatch[1],
+                name: itemMatch[2],
+                category: itemMatch[3],
+                quantity: itemMatch[4],
+                unitPrice: itemMatch[5] || "",
+                subtotal: itemMatch[6] || ""
+              });
+            } else if (totalItemsMatch) {
+              totalItems = totalItemsMatch[1];
+            } else if (totalAmountMatch) {
+              totalAmount = totalAmountMatch[1];
+            }
+          });
+
+          if (!items.length) {
+            return `
+              <div style="margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere;">
+                ${escapeHtml(decodedValue)}
+              </div>
+            `;
+          }
+
+          const itemRows = items.map(function (item) {
+            const priceColumns = item.unitPrice
+              ? `
+                  <span>${escapeHtml(item.unitPrice)} each</span>
+                  <strong>${escapeHtml(item.subtotal)}</strong>
+                `
+              : '<span>Unpriced item</span><strong>—</strong>';
+
+            return `
+              <div class="wcpi-collateral-item">
+                <div class="wcpi-collateral-name-wrap">
+                  <span class="wcpi-collateral-number">${escapeHtml(item.number)}</span>
+                  <div>
+                    <span class="wcpi-collateral-name">${escapeHtml(item.name)}</span>
+                    <span class="wcpi-collateral-category">${escapeHtml(item.category)}</span>
+                  </div>
+                </div>
+
+                <div class="wcpi-collateral-values">
+                  <span>Qty: <strong>${escapeHtml(item.quantity)}</strong></span>
+                  ${priceColumns}
+                </div>
+              </div>
+            `;
+          }).join("");
+
+          return `
+            <div class="wcpi-collateral-list">
+              ${itemRows}
+            </div>
+
+            <div class="wcpi-collateral-totals">
+              <div class="wcpi-collateral-total-box">
+                <span>Total Selected Items</span>
+                <strong>${escapeHtml(totalItems || "0")}</strong>
+              </div>
+              <div class="wcpi-collateral-total-box">
+                <span>Total Amount</span>
+                <strong>${escapeHtml(totalAmount || "₱0.00")}</strong>
+              </div>
+            </div>
+          `;
+        }
+
+        function buildVisitorDisplay(dateString, booking, bookingIndex) {
+          const visitors = Array.isArray(booking.visitors)
+            ? booking.visitors.filter(Boolean)
+            : [];
+
+          if (!visitors.length) {
+            return `<span>Not specified</span>`;
+          }
+
+          if (visitors.length <= 3) {
+            return `
+              <ol style="margin:6px 0 0 18px;padding:0;">
+                ${visitors.map(function (visitor) {
+                  return `<li style="margin-bottom:2px;">${escapeHtml(visitor)}</li>`;
+                }).join("")}
+              </ol>
+            `;
+          }
+
+          return `
+            <button
+              type="button"
+              class="wcpi-view-visitors-btn"
+              data-booking-index="${bookingIndex}"
+              style="
+                margin-top:6px;
+                padding:7px 11px;
+                border:1px solid #155eef;
+                border-radius:8px;
+                color:#155eef;
+                background:#ffffff;
+                font-size:11px;
+                font-weight:600;
+                cursor:pointer;
+              "
+            >
+              <i class="bi bi-people"></i>
+              View Visitors (${visitors.length})
+            </button>
+          `;
+        }
+
+        function showVisitorsPopup(dateString, bookingIndex) {
+          const records = bookedDateRecords.get(dateString) || [];
+          const booking = records[bookingIndex];
+
+          if (!booking) {
+            return;
+          }
+
+          const visitors = Array.isArray(booking.visitors)
+            ? booking.visitors.filter(Boolean)
+            : [];
+
+          Swal.fire({
+            icon: "info",
+            title: "Registered Visitors",
+            html: `
+              <div style="text-align:left;font-size:13px;line-height:1.65;">
+                <div style="margin-bottom:10px;color:#667085;">
+                  ${escapeHtml(formatDisplayDate(dateString))}<br>
+                  ${escapeHtml(booking.period || "Booking")}
+                  ${booking.timeFrom || booking.timeTo ? ` · ${escapeHtml(formatBookingTimeDisplay(booking.timeFrom))} - ${escapeHtml(formatBookingTimeDisplay(booking.timeTo))}` : ""}
+                </div>
+
+                <ol style="margin:0;padding-left:24px;max-height:330px;overflow-y:auto;">
+                  ${visitors.map(function (visitor) {
+                    return `<li style="padding:6px 0;border-bottom:1px solid #eaecf0;">${escapeHtml(visitor)}</li>`;
+                  }).join("")}
+                </ol>
+              </div>
+            `,
+            width: 500,
+            confirmButtonText: "Back to Booking Details",
+            confirmButtonColor: "#155eef"
+          }).then(function () {
+            showExistingBookings(dateString);
+          });
+        }
+
+        function getLocalTodayDateString() {
+          const today = new Date();
+
+          const year = today.getFullYear();
+          const month = String(
+            today.getMonth() + 1
+          ).padStart(2, "0");
+          const day = String(
+            today.getDate()
+          ).padStart(2, "0");
+
+          return `${year}-${month}-${day}`;
+        }
+
+        function isPastBookingDate(dateString) {
+          /*
+           * Booking dates are stored as YYYY-MM-DD.
+           * Comparing this normalized format works safely
+           * without UTC/date-shift problems.
+           *
+           * Today is NOT considered past.
+           */
+          return (
+            String(dateString || "") <
+            getLocalTodayDateString()
+          );
+        }
+
+        function showExistingBookings(dateString) {
+          const records =
+            bookedDateRecords.get(dateString) || [];
+
+          if (!records.length) {
+            openDateDetails(dateString);
+            return;
+          }
+
+          const isPastDate =
+            isPastBookingDate(dateString);
+
+          /*
+           * DISPLAY ORDER:
+           *
+           * Latest Forminator submission at the top.
+           * Oldest submission at the bottom.
+           *
+           * entryId is the Forminator entry_id.
+           *
+           * We keep originalIndex so the View Visitors button
+           * still opens the correct booking after sorting.
+           */
+          const sortedRecords = records
+            .map(function (booking, originalIndex) {
+              return {
+                booking: booking,
+                originalIndex: originalIndex
+              };
+            })
+            .sort(function (a, b) {
+              const entryA =
+                Number(a.booking.entryId || 0);
+
+              const entryB =
+                Number(b.booking.entryId || 0);
+
+              if (entryA !== entryB) {
+                return entryB - entryA;
+              }
+
+              /*
+               * Local/new records without an entry ID:
+               * most recently added record appears first.
+               */
+              return (
+                b.originalIndex -
+                a.originalIndex
+              );
+            });
+
+          const morningAvailable =
+            periodHasAvailability(
+              dateString,
+              "Morning"
+            );
+
+          const afternoonAvailable =
+            periodHasAvailability(
+              dateString,
+              "Afternoon"
+            );
+
+          const fullyBooked =
+            !morningAvailable &&
+            !afternoonAvailable;
+
+          const rows = sortedRecords.map(function (recordItem, index) {
+            const booking =
+              recordItem.booking;
+
+            const originalIndex =
+              recordItem.originalIndex;
+
+            const period =
+              normalizePeriod(
+                booking.period
+              );
+            const periodLabel = period || "Booked";
+            const timeRange =
+              booking.timeFrom || booking.timeTo
+                ? `${formatBookingTimeDisplay(booking.timeFrom)} - ${formatBookingTimeDisplay(booking.timeTo)}`
+                : "Not specified";
+
+            return `
+              <div class="booking-detail-card" style="
+                margin-bottom:12px;
+                padding:16px;
+                border:1px solid #d0d5dd;
+                border-radius:10px;
+                background:#ffffff;
+              ">
+                <div style="
+                  margin-bottom:10px;
+                  padding-bottom:8px;
+                  border-bottom:1px solid #eaecf0;
+                  color:#101828;
+                  font-size:14px;
+                  font-weight:700;
+                ">
+                  Booking ${index + 1}: ${escapeHtml(periodLabel)}
+                </div>
+
+                <div class="wcpi-booking-detail-data">
+                  <strong>Department:</strong>
+                  <span>${escapeHtml(booking.department || "Not specified")}</span>
+
+                  <strong>Booked By:</strong>
+                  <span>${escapeHtml(booking.name || "Not specified")}</span>
+
+                  <strong>Booking Period:</strong>
+                  <span>${escapeHtml(periodLabel)}</span>
+
+                  <strong>Booking Time:</strong>
+                  <span>${escapeHtml(timeRange)}</span>
+
+                  <strong>No. of Pax:</strong>
+                  <span>${escapeHtml(String(booking.pax || (booking.visitors || []).length || "Not specified"))}</span>
+
+                  <strong>Visitors:</strong>
+                  <div>${buildVisitorDisplay(dateString, booking, originalIndex)}</div>
+                </div>
+
+                <div style="margin-top:10px;">
+                  <strong>Purpose of Booking:</strong>
+                  <div style="margin-top:3px;white-space:pre-wrap;overflow-wrap:anywhere;">
+                    ${escapeHtml(booking.purpose || "Not specified")}
+                  </div>
+                </div>
+
+                <div style="margin-top:10px;">
+                  <strong>Remarks:</strong>
+                  <div style="margin-top:3px;white-space:pre-wrap;overflow-wrap:anywhere;">
+                    ${escapeHtml(booking.remarks || "None")}
+                  </div>
+                </div>
+
+                <div style="
+                  margin-top:10px;
+                  padding:11px 12px;
+                  border:1px solid #dbe4f3;
+                  border-radius:9px;
+                  background:#f8faff;
+                ">
+                  <strong>Marketing Collaterals:</strong>
+                  ${buildMarketingCollateralsDisplay(booking.requestNeeds)}
+                </div>
+              </div>
+            `;
+          });
+
+          let availabilityHtml = "";
+
+          if (isPastDate) {
+            availabilityHtml = `
+              <div style="
+                margin-top:14px;
+                padding:12px 14px;
+                border:1px solid #d0d5dd;
+                border-radius:10px;
+                color:#475467;
+                background:#f8fafc;
+              ">
+                <strong>Past booking date</strong>
+                <div style="margin-top:4px;">
+                  This date has already passed. Booking details are view-only.
+                </div>
+              </div>
+            `;
+          } else if (!fullyBooked) {
+            const availablePeriods = [];
+
+            if (morningAvailable) {
+              availablePeriods.push("Morning");
+            }
+
+            if (afternoonAvailable) {
+              availablePeriods.push("Afternoon");
+            }
+
+            availabilityHtml = `
+              <div style="
+                margin-top:14px;
+                padding:12px 14px;
+                border:1px solid #f79009;
+                border-radius:10px;
+                color:#b54708;
+                background:#fff7e8;
+              ">
+                <strong>Additional booking times are still available.</strong>
+                <div style="margin-top:4px;">
+                  Available period${availablePeriods.length > 1 ? "s" : ""}:
+                  ${escapeHtml(availablePeriods.join(" and "))}.
+                  Select a period to see only the open From/To times.
+                </div>
+              </div>
+            `;
+          }
+
+          Swal.fire({
+            icon: fullyBooked ? "info" : "warning",
+            title: "Bookings for " + formatDisplayDate(dateString),
+            html: `
+              <div style="text-align:left;font-size:13px;line-height:1.65;">
+                <div class="wcpi-booking-details-grid">
+                  ${rows.join("")}
+
+                  <div class="wcpi-booking-details-footer">
+                    ${availabilityHtml}
+                  </div>
+                </div>
+              </div>
+            `,
+            width: 1100,
+            customClass: {
+              popup: "wcpi-booking-details-popup"
+            },
+            showCancelButton:
+              !isPastDate &&
+              !fullyBooked,
+
+            confirmButtonText:
+              isPastDate || fullyBooked
+                ? "Close"
+                : "Book Available Slot",
+
+            cancelButtonText: "Close",
+            confirmButtonColor: "#155eef",
+            cancelButtonColor: "#667085",
+            didOpen: function () {
+              $(Swal.getHtmlContainer())
+                .off("click.wcpiVisitors")
+                .on("click.wcpiVisitors", ".wcpi-view-visitors-btn", function (event) {
+                  event.preventDefault();
+                  const bookingIndex = Number($(this).attr("data-booking-index"));
+                  showVisitorsPopup(dateString, bookingIndex);
+                });
+            }
+          }).then(function (result) {
+            if (
+              result.isConfirmed &&
+              !isPastDate &&
+              !fullyBooked
+            ) {
+              openDateDetails(dateString);
+            }
+          });
+        }
+
+        function openDateDetails(dateString) {
+          /*
+           * Past dates are view-only.
+           * Do not allow any code path to start a new booking.
+           */
+          if (isPastBookingDate(dateString)) {
+            if (
+              (bookedDateRecords.get(dateString) || [])
+                .length
+            ) {
+              showExistingBookings(dateString);
+            }
+
+            return;
+          }
+
+          selectedDate = dateString;
+          selectedPeriod = "";
+          syncSelectedDateToForminator(selectedDate);
+          syncSelectedPeriodToForminator("");
+          highlightSelectedDate(dateString);
+
+          $("#modal-selected-date").text(formatDisplayDate(dateString));
+          $("#modal-room-name").text(selectedRoom.name);
+          renderAvailabilityMessage(dateString);
+
+          $("#continue-booking-button")
+            .prop("disabled", isDateFullyBooked(dateString))
+            .text(isDateFullyBooked(dateString) ? "Fully Booked" : "Book This Date");
+
+          if (isDateFullyBooked(dateString)) {
+            showExistingBookings(dateString);
+            return;
+          }
+
+          dateModal.show();
+        }
+
+        const calendar = new FullCalendar.Calendar(
+          calendarElement,
+          {
+            initialView: "dayGridMonth",
+            height: "auto",
+            fixedWeekCount: false,
+            showNonCurrentDates: true,
+            // Show every submitted booking directly inside the date cell.
+            // Previously this was set to 2, which collapsed additional
+            // submissions into a "+ more" link.
+            dayMaxEvents: false,
+            dayMaxEventRows: false,
+
+            headerToolbar: {
+              left: "prev,next",
+              center: "title",
+              right: "dayGridMonth"
+            },
+
+            buttonText: {
+              month: "Month"
+            },
+
+            events: [],
+
+            dateClick: function (info) {
+              const clickedDate = new Date(
+                `${info.dateStr}T00:00:00`
+              );
+
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              if (clickedDate < today) {
+                return;
+              }
+
+              const existingRecords =
+                bookedDateRecords.get(info.dateStr) || [];
+
+              if (existingRecords.length) {
+                showExistingBookings(info.dateStr);
+                return;
+              }
+
+              openDateDetails(info.dateStr);
+            },
+
+            eventClick: function (info) {
+              info.jsEvent.preventDefault();
+
+              const eventDate =
+                info.event.extendedProps.date ||
+                formatDate(info.event.start);
+
+              showExistingBookings(eventDate);
+            },
+
+            datesSet: function () {
+              window.setTimeout(function () {
+                bookedDateRecords.forEach(function (_records, dateString) {
+                  const day = $(`.fc-daygrid-day[data-date="${dateString}"]`);
+                  day.addClass("booked-calendar-date");
+
+                  if (isDateFullyBooked(dateString)) {
+                    day.addClass("fully-booked-calendar-date");
+                  }
+                });
+              }, 0);
+            },
+
+            eventDidMount: function (info) {
+              const eventTimeFrom =
+                info.event.extendedProps.timeFrom;
+
+              const eventTimeTo =
+                info.event.extendedProps.timeTo;
+
+              info.el.setAttribute(
+                "title",
+                eventTimeFrom && eventTimeTo
+                  ? (
+                      formatBookingTimeDisplay(eventTimeFrom) +
+                      " - " +
+                      formatBookingTimeDisplay(eventTimeTo)
+                    )
+                  : (
+                      info.event.extendedProps.period
+                        ? info.event.extendedProps.period + " booking"
+                        : "Booked date"
+                    )
+              );
+            }
+          }
+        );
+
+        loadPreloadedForminatorBookings();
+        calendar.setOption("events", buildCalendarEvents());
+        calendar.render();
+        refreshCalendarBookings();
+
+        $(".room-option").on(
+          "click",
+          function () {
+            const roomButton = $(this);
+
+            $(".room-option").removeClass("active");
+            roomButton.addClass("active");
+
+            if (roomButton.prop("disabled")) {
+              return;
+            }
+
+            if (roomButton.prop("disabled")) {
+              return;
+            }
+
+            selectedRoom = {
+              id: roomButton.data("room-id"),
+              name: roomButton.data("room-name")
+            };
+
+            selectedDate = "";
+            selectedPeriod = "";
+
+            updateRoomInformation();
+            removeSelectedCalendarDate();
+
+            refreshCalendarBookings();
+          }
+        );
+
+        $("#calendar-today-button").on(
+          "click",
+          function () {
+            calendar.today();
+          }
+        );
+        $("#continue-booking-button").on(
+          "click",
+          function () {
+            if (!selectedDate) {
+              Swal.fire({
+                icon: "warning",
+                title: "No Date Selected",
+                text: "Please select an available date first.",
+                confirmButtonColor: "#155eef"
+              });
+              return;
+            }
+
+            if (isDateFullyBooked(selectedDate)) {
+              Swal.fire({
+                icon: "error",
+                title: "Date Fully Booked",
+                text: "No available time range remains on this date.",
+                confirmButtonColor: "#155eef"
+              });
+              return;
+            }
+
+            $("#booking-form-room").text(selectedRoom.name);
+            $("#booking-form-date").text(formatDisplayDate(selectedDate));
+
+            const forminatorName = getForminatorField(
+              forminatorConfig.bookedByField
+            ).val() || "";
+
+            const forminatorPurpose = getForminatorField(
+              forminatorConfig.purposeField
+            ).val() || "";
+
+            const forminatorPeriod = normalizePeriod(
+              getForminatorField(forminatorConfig.periodField).val() || ""
+            );
+
+            $("#booking-name").val(forminatorName);
+            $("#booking-purpose").val(forminatorPurpose);
+
+            updatePeriodOptions(selectedDate);
+
+            $("#booking-period").val(
+              forminatorPeriod && !isSlotBooked(selectedDate, forminatorPeriod)
+                ? forminatorPeriod
+                : ""
+            );
+
+            selectedPeriod = $("#booking-period").val();
+            syncSelectedDateToForminator(selectedDate);
+            syncSelectedPeriodToForminator(selectedPeriod);
+            $(".booking-form-control").removeClass("is-invalid");
+            updateConfirmBookingButton();
+
+            dateModal.hide();
+
+            modalElement.addEventListener(
+              "hidden.bs.modal",
+              function showBookingFormOnce() {
+                bookingFormModal.show();
+                modalElement.removeEventListener(
+                  "hidden.bs.modal",
+                  showBookingFormOnce
+                );
+              }
+            );
+          }
+        );
+
+        function updateConfirmBookingButton() {
+          const hasDate = Boolean(selectedDate);
+          const hasDepartment = Boolean($("#department").val().trim());
+          const hasName = Boolean($("#booking-name").val().trim());
+          const hasPurpose = Boolean($("#booking-purpose").val().trim());
+          const hasPeriod = Boolean($("#booking-period").val());
+          const hasTimeFrom = Boolean($("#booking-time-from").val());
+          const hasTimeTo = Boolean($("#booking-time-to").val());
+          const pax = parseInt($("#number-of-pax").val(), 10) || 0;
+          const visitorNames = $("#visitors_container .visitor-name-input")
+            .map(function () {
+              return $(this).val().trim();
+            })
+            .get();
+
+          const hasValidVisitors =
+            pax > 0 &&
+            visitorNames.length === pax &&
+            visitorNames.every(function (visitorName) {
+              return Boolean(visitorName);
+            });
+
+          const isComplete =
+            hasDate &&
+            hasDepartment &&
+            hasName &&
+            hasPurpose &&
+            hasPeriod &&
+            hasTimeFrom &&
+            hasTimeTo &&
+            hasValidVisitors;
+
+          $("#submit-booking-button")
+            .toggleClass("is-ready", isComplete)
+            .prop("disabled", !isComplete);
+        }
+
+        // Recheck every required field immediately, including dynamic visitor
+        // inputs and both time selectors. The submit button stays hidden until
+        // this validation matches the booking form's submit requirements.
+        $(document).on(
+          "input change",
+          [
+            "#department",
+            "#booking-name",
+            "#booking-purpose",
+            "#booking-period",
+            "#booking-time-from",
+            "#booking-time-to",
+            "#number-of-pax",
+            "#visitors_container .visitor-name-input"
+          ].join(", "),
+          function () {
+            updateConfirmBookingButton();
+          }
+        );
+
+        $(document).on(
+          "click",
+          "#visitors_container .visitor-remove-btn",
+          function () {
+            window.setTimeout(updateConfirmBookingButton, 0);
+          }
+        );
+
+        $("#showroom-booking-form").on("submit", function (event) {
+          event.preventDefault();
+
+          const department = $("#department").val().trim();
+          const name = $("#booking-name").val().trim();
+          const purpose = $("#booking-purpose").val().trim();
+          const remarks = $("#booking-remarks").val().trim();
+          const period = normalizePeriod($("#booking-period").val());
+          const timeFrom = $("#booking-time-from").val();
+          const timeTo = $("#booking-time-to").val();
+          const pax = parseInt($("#number-of-pax").val(), 10) || 0;
+          const visitorNames = $("#visitors_container .visitor-name-input")
+            .map(function () {
+              return $(this).val().trim();
+            })
+            .get();
+
+          selectedPeriod = period;
+
+          if (
+            !selectedDate ||
+            !department ||
+            !name ||
+            !purpose ||
+            !period ||
+            !timeFrom ||
+            !timeTo ||
+            pax < 1 ||
+            visitorNames.length !== pax ||
+            visitorNames.some(function (visitorName) {
+              return !visitorName;
+            })
+          ) {
+            Swal.fire({
+              icon: "warning",
+              title: "Complete Required Fields",
+              text: "Please complete the department, booking period, time range, pax, all visitor names, purpose, and booked by fields.",
+              confirmButtonColor: "#155eef"
+            });
+
+            updateConfirmBookingButton();
+            return;
+          }
+
+          if (period === "Whole Day") {
+            const wholeDayFromMinutes =
+              bookingTimeToMinutes(timeFrom);
+
+            const wholeDayToMinutes =
+              bookingTimeToMinutes(timeTo);
+
+            if (
+              wholeDayFromMinutes === null ||
+              wholeDayToMinutes === null ||
+              wholeDayFromMinutes >= (12 * 60) ||
+              wholeDayToMinutes < (12 * 60)
+            ) {
+              Swal.fire({
+                icon: "error",
+                title: "Invalid Whole Day Time",
+                text: "Whole Day bookings must start in AM and end in PM. Morning-only or afternoon-only ranges are not allowed.",
+                confirmButtonColor: "#155eef"
+              });
+
+              configureBookingTime(period);
+              return;
+            }
+          }
+
+          if (
+            !isTimeRangeAvailable(
+              selectedDate,
+              timeFrom,
+              timeTo
+            )
+          ) {
+            Swal.fire({
+              icon: "error",
+              title: "Selected Time Is Already Taken",
+              text: "This booking overlaps an existing reservation. Please choose another From/To time.",
+              confirmButtonColor: "#155eef"
+            });
+
+            configureBookingTime(period);
+            return;
+          }
+
+          syncBookingDetailsToForminator();
+
+          const submitButton = getForminatorSubmitButton();
+
+          if (!getForminatorForm().length || !submitButton.length) {
+            Swal.fire({
+              icon: "error",
+              title: "Forminator Form Not Found",
+              text: "Place [forminator_form id=\"33056\"] on the same page and make sure its submit button is available.",
+              confirmButtonColor: "#155eef"
+            });
+            return;
+          }
+
+          const confirmedBooking = {
+            date: selectedDate,
+            department: department,
+            period: period,
+            timeFrom: timeFrom,
+            timeTo: timeTo,
+            pax: pax,
+            visitors: visitorNames,
+            name: name,
+            purpose: purpose,
+            remarks: remarks,
+            requestNeeds: getSelectedRequestNeedsValue()
+          };
+
+          submitButton.trigger("click");
+
+          const dateBookings = getDateBookings(confirmedBooking.date);
+          dateBookings.set(
+            confirmedBooking.period +
+              "-" +
+              confirmedBooking.timeFrom +
+              "-" +
+              confirmedBooking.timeTo,
+            {
+            date: confirmedBooking.date,
+            department: confirmedBooking.department,
+            name: confirmedBooking.name,
+            purpose: confirmedBooking.purpose,
+            remarks: confirmedBooking.remarks,
+            requestNeeds: confirmedBooking.requestNeeds,
+            period: confirmedBooking.period,
+            timeFrom: confirmedBooking.timeFrom,
+            timeTo: confirmedBooking.timeTo,
+            pax: confirmedBooking.pax,
+            visitors: confirmedBooking.visitors
+            }
+          );
+
+          if (!bookedDateRecords.has(confirmedBooking.date)) {
+            bookedDateRecords.set(confirmedBooking.date, []);
+          }
+
+          bookedDateRecords.get(confirmedBooking.date).push({
+            date: confirmedBooking.date,
+            department: confirmedBooking.department,
+            name: confirmedBooking.name,
+            purpose: confirmedBooking.purpose,
+            remarks: confirmedBooking.remarks,
+            requestNeeds: confirmedBooking.requestNeeds,
+            period: confirmedBooking.period,
+            timeFrom: confirmedBooking.timeFrom,
+            timeTo: confirmedBooking.timeTo,
+            pax: confirmedBooking.pax,
+            visitors: confirmedBooking.visitors
+          });
+
+          refreshCalendarBookings();
+
+          bookingFormModal.hide();
+
+          Swal.fire({
+            icon: "success",
+            title: "Booking Submitted!",
+            html: `
+              <div style="text-align:left;font-size:13px;line-height:1.8;">
+                <strong>Room:</strong> ${escapeHtml(selectedRoom.name)}<br>
+                <strong>Date:</strong> ${formatDisplayDate(confirmedBooking.date)}<br>
+                <strong>Period:</strong> ${escapeHtml(confirmedBooking.period)}<br>
+                <strong>Name:</strong> ${escapeHtml(confirmedBooking.name)}<br>
+                <strong>Purpose:</strong> ${escapeHtml(confirmedBooking.purpose)}
+              </div>
+            `,
+            confirmButtonText: "Done",
+            confirmButtonColor: "#155eef"
+          }).then(function () {
+            // Refresh the page so the calendar reloads the latest
+            // Forminator submissions after a successful booking.
+            window.location.reload();
+          });
+        });
+
+
+        // =========================================================
+        // LIVE SYNC: VISIBLE MODAL -> HIDDEN FORMINATOR FORM
+        // =========================================================
+
+        $(document).on("input change", "#department", function () {
+          setForminatorField(
+            forminatorConfig.departmentField,
+            $(this).val()
+          );
+        });
+
+        $(document).on("change", "#booking-time-from", function () {
+          setForminatorField(
+            forminatorConfig.timeFromField,
+            $(this).val()
+          );
+        });
+
+        $(document).on("change", "#booking-time-to", function () {
+          setForminatorField(
+            forminatorConfig.timeToField,
+            $(this).val()
+          );
+        });
+
+        $(document).on("input change", "#number-of-pax", function () {
+          setForminatorField(
+            forminatorConfig.paxField,
+            $(this).val()
+          );
+
+          // Visitor fields can be generated/removed on this event,
+          // so sync the full booking set again afterwards.
+          window.setTimeout(syncBookingDetailsToForminator, 0);
+        });
+
+        $(document).on("input change", "#booking-remarks", function () {
+          setForminatorField(
+            forminatorConfig.remarksField,
+            $(this).val()
+          );
+        });
+
+        $(document).on(
+          "input change",
+          "#visitors_container .visitor-name-input",
+          function () {
+            syncBookingDetailsToForminator();
+          }
+        );
+
+        $(document).on(
+          "click",
+          "#visitors_container .visitor-remove-btn",
+          function () {
+            window.setTimeout(syncBookingDetailsToForminator, 0);
+          }
+        );
+
+        $(document).on("input change", "#booking-name", function () {
+          setForminatorField(
+            forminatorConfig.bookedByField,
+            $(this).val()
+          );
+
+          if ($(this).val().trim()) {
+            $(this).removeClass("is-invalid");
+          }
+
+          updateConfirmBookingButton();
+        });
+
+        $(document).on("input change", "#booking-purpose", function () {
+          setForminatorField(
+            forminatorConfig.purposeField,
+            $(this).val()
+          );
+
+          if ($(this).val().trim()) {
+            $(this).removeClass("is-invalid");
+          }
+
+          updateConfirmBookingButton();
+        });
+
+        $(document).on("change", "#booking-period", function () {
+          const period = normalizePeriod($(this).val());
+
+          if (
+            period &&
+            !periodHasAvailability(
+              selectedDate,
+              period
+            )
+          ) {
+            $(this).val("");
+            selectedPeriod = "";
+            syncSelectedPeriodToForminator("");
+            resetBookingTime();
+
+            Swal.fire({
+              icon: "warning",
+              title: "No Available Time",
+              text: "There are no open time ranges left in the selected period.",
+              confirmButtonColor: "#155eef"
+            });
+
+            updateConfirmBookingButton();
+            return;
+          }
+
+          selectedPeriod = period;
+
+          syncSelectedPeriodToForminator(selectedPeriod);
+
+          updateConfirmBookingButton();
+        });
+
+        const forminatorObserver = new MutationObserver(function () {
+          if (getForminatorForm().length) {
+            syncBookingDetailsToForminator();
+          }
+        });
+
+        forminatorObserver.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+
+        window.setTimeout(syncBookingDetailsToForminator, 500);
+        window.setTimeout(syncBookingDetailsToForminator, 1500);
+
+        modalElement.addEventListener(
+          "hidden.bs.modal",
+          function () {
+            removeSelectedCalendarDate();
+          }
+        );
+
+        bookingFormModalElement.addEventListener(
+          "hidden.bs.modal",
+          function () {
+            selectedDate = "";
+            selectedPeriod = "";
+            $("#showroom-booking-form")[0].reset();
+            selectedRequestNeeds.clear();
+            renderRequestNeeds("");
+            renderVisitorFields(0);
+            resetBookingTime();
+            $(".booking-form-control").removeClass("is-invalid");
+            updateConfirmBookingButton();
+            removeSelectedCalendarDate();
+          }
+        );
+
+        let resizeTimer;
+
+        $(window).on("resize", function () {
+          clearTimeout(resizeTimer);
+
+          resizeTimer = setTimeout(function () {
+            calendar.updateSize();
+          }, 150);
+        });
+      });
+</script>
+  </body>
+  </html>
